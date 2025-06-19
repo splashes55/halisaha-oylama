@@ -149,25 +149,30 @@ if (location.pathname.endsWith("vote.html")) {
 
     // Form gönderildiğinde oyları kaydet
     oyForm.onsubmit = async (e) => {
-      e.preventDefault();
-      const kendin = kendinSelect.value;
-      if (!kendin) {
-        alert("Lütfen önce kendinizi seçin.");
-        return;
-      }
+  e.preventDefault();
+  const kendin = kendinSelect.value;
+  if (!kendin) {
+    alert("Lütfen önce kendinizi seçin.");
+    return;
+  }
 
-      for (let oid of oynayanlar) {
-        if (oid === kendin) continue;
-        const puan = oyForm[`puan_${oid}`].value;
-        await postData(SHEET_OYLAR, [[macID, kendin, oid, puan]]);
-      }
+  const oylar = [];
 
-      document.getElementById("msg").innerText = "Oylar kaydedildi.";
-      oyForm.remove();
-    };
+  for (let oid of oynayanlar) {
+    if (oid === kendin) continue;
+    const puan = oyForm[`puan_${oid}`].value;
+    oylar.push([macID, kendin, oid, puan]);
+  }
 
-    document.getElementById("voteContainer").appendChild(oyForm);
-  })();
+  const sonuc = await postData(SHEET_OYLAR, oylar);
+
+  if (sonuc?.success) {
+    document.getElementById("msg").innerText = "✅ Oylar kaydedildi.";
+    oyForm.remove();
+  } else {
+    document.getElementById("msg").innerText = "❌ Oylar kaydedilemedi.";
+  }
+};
 }
 
 
@@ -262,12 +267,21 @@ async function postData(sheetTabId, row) {
   try {
     const response = await fetch(`${NOCODE_URL}?tabId=${sheetTabId}`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(row) // örn: [[macID, oylayanID, oylananID, puan, macAdamID]]
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(row)
     });
-    return await response.json();
+
+    const result = await response.json();
+    console.log("postData yanıtı:", result);
+    return result;
   } catch (error) {
-    console.error('postData hatası:', error);
+    console.error("postData hatası:", error);
+    return null;
+  }
+}
+
   }
 }
 
