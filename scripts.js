@@ -193,7 +193,8 @@ if (location.pathname.endsWith("vote.html")) {
 
 
 // 🟫 İstatistikler (stats.html)
-if (location.pathname.endsWith("stats.html")) {
+if (location.pathname === "/stats" || location.pathname.endsWith("stats.html")) {
+
   alert("çalıştı");
   (async () => {
     const oyuncular = await getData(SHEET_OYUNCULAR);
