@@ -222,6 +222,8 @@ if (!Array.isArray(oyuncular) || !Array.isArray(oylar) || !Array.isArray(maclar)
     // Oyuncu ID → aldığı puanlar
     const puanlar = {};
 
+    console.log("OY VERİSİ:", oylar, Array.isArray(oylar));
+    
     oylar.forEach(([macID, oylayanID, oylananID, puan]) => {
       if (!puanlar[oylananID]) puanlar[oylananID] = [];
       puanlar[oylananID].push(Number(puan));
