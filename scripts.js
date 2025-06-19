@@ -146,11 +146,17 @@ if (location.pathname.endsWith("stats.html")) {
 }
 
 // 📦 Yardımcı Fonksiyonlar
-async function getData(sheet) {
-  const res = await fetch(`${NOCODE_URL}?tabId=${sheet}`);
-  const json = await res.json();
-  return json.data || json;
+async function getData(sheetTabId) {
+    try {
+        const res = await fetch(`${NOCODE_URL}?tabId=${sheetTabId}`);
+        const json = await res.json();
+        return json.data || json;
+    } catch (error) {
+        console.error('getData hatası:', error);
+        return null;
+    }
 }
+
 
 
 
