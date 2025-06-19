@@ -213,15 +213,7 @@ if (location.pathname.endsWith("vote.html")) {
         const puan = oyForm[`puan_${oid}`].value;
         await postData(SHEET_OYLAR, [[macID, kendin, oid, puan]]);
       }
-
-      // Sonra maçın adamı bilgisi gönderilsin
-      const macAdamID = adamSelect.value;
-      if (macAdamID) {
-        await postData(SHEET_OYLAR, [[macID, kendin, -1, -1, macAdamID]]);
-        // Ya da maç tablosunda güncellemek için farklı bir method gerekir, 
-        // Sheet yapına bağlı, sen belirtirsen yardımcı olurum.
-      }
-
+      
       document.getElementById("msg").innerText = "Oylar kaydedildi.";
       oyForm.remove();
     };
