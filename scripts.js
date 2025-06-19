@@ -32,15 +32,25 @@ if (location.pathname.endsWith("index.html") || location.pathname === "/") {
   (async () => {
     const maclar = await getData(SHEET_MACLAR);
     console.log("maclar verisi:", maclar);
+    
     const container = document.getElementById("matchList");
     container.innerHTML = "";
+
+    if (!Array.isArray(maclar)) {
+      container.innerHTML = "<p>Maç verisi alınamadı.</p>";
+      return;
+    }
+
     maclar.reverse().forEach(mac => {
+      if (!mac || typeof mac !== "object") return;
+
       const { id, tarih, saat, yer } = mac;
       const btn = `<a href="vote.html?mac=${id}">Oy Ver</a>`;
       container.innerHTML += `<div><strong>${tarih} ${saat}</strong> - ${yer} ${btn}</div>`;
     });
   })();
 }
+
 
 // 🟪 Oy Verme Sayfası (vote.html)
 if (location.pathname.endsWith("vote.html")) {
