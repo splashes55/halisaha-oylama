@@ -41,24 +41,27 @@ if (location.pathname.endsWith("vote.html")) {
     const oyuncular = await getData(SHEET_OYUNCULAR);
     const oylar = await getData(SHEET_OYLAR);
 
-    const mac = maclar.find(m => m[0] === macID);
+    // mac.id ile arama yapıyoruz artık
+    const mac = maclar.find(m => m.id === macID);
     if (!mac) return document.getElementById("voteContainer").innerText = "Maç bulunamadı";
 
-    const [id, tarihRaw, saatRaw, yer, oyuncuIDs] = mac;
+    // Nesne yapısına göre alanlar
+    const { id, tarih, saat, yer, oyuncular: oyuncuIDs } = mac;
     const oynayanlar = oyuncuIDs.split(",");
-    const macZamani = new Date(tarihRaw);
+
+    const macZamani = new Date(tarih);
     const simdi = new Date();
     if ((simdi - macZamani) / 3600000 > 24) {
-      document.getElementById("voteContainer").innerText = "Oy verme süreci dolmuş.";
-      return;
+      return document.getElementById("voteContainer").innerText = "Oy verme süreci dolmuş.";
     }
 
     const kendinSelect = document.createElement("select");
     kendinSelect.name = "kendin";
     kendinSelect.innerHTML = `<option value="">-- Kendini Seç --</option>`;
     oynayanlar.forEach(oid => {
-      const o = oyuncular.find(p => p[0] === oid);
-      if (o) kendinSelect.innerHTML += `<option value="${o[0]}">${o[1]}</option>`;
+      // Burada oyuncular artık nesne dizisi, id alanına göre bul
+      const o = oyuncular.find(p => p.id === oid);
+      if (o) kendinSelect.innerHTML += `<option value="${o.id}">${o.isim}</option>`;
     });
 
     const oyForm = document.createElement("form");
@@ -93,11 +96,11 @@ if (location.pathname.endsWith("vote.html")) {
       // Oy Listesi
       oynayanlar.forEach(oid => {
         if (oid === kendin) return;
-        const o = oyuncular.find(p => p[0] === oid);
+        const o = oyuncular.find(p => p.id === oid);
         if (o) {
           const div = document.createElement("div");
           div.classList.add("oycu");
-          div.innerHTML = `<label>${o[1]}: <select name="puan_${oid}">
+          div.innerHTML = `<label>${o.isim}: <select name="puan_${oid}">
             ${[...Array(11).keys()].map(i => `<option value="${i}">${i}</option>`).join("")}
           </select></label>`;
           oyuncuDiv.appendChild(div);
@@ -112,8 +115,8 @@ if (location.pathname.endsWith("vote.html")) {
       macAdamiSelect.innerHTML = `<option value="">-- Seçin --</option>`;
       oynayanlar.forEach(oid => {
         if (oid === kendin) return;
-        const o = oyuncular.find(p => p[0] === oid);
-        if (o) macAdamiSelect.innerHTML += `<option value="${o[0]}">${o[1]}</option>`;
+        const o = oyuncular.find(p => p.id === oid);
+        if (o) macAdamiSelect.innerHTML += `<option value="${o.id}">${o.isim}</option>`;
       });
       macAdamiLabel.appendChild(macAdamiSelect);
       macAdamiWrapper.appendChild(macAdamiLabel);
@@ -135,6 +138,79 @@ if (location.pathname.endsWith("vote.html")) {
     };
 
     document.getElementById("voteContainer").appendChild(oyForm);
+  })();
+}
+
+
+
+
+//-------------------------------------------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+// 🟫 İstatistikler (stats.html)
+if (location.pathname === "/stats" || location.pathname.endsWith("stats.html")) {
+
+  alert("İstatistik sayfası kodu çalıştı ✅");
+
+  (async () => {
+    const oyuncular = await getData(SHEET_OYUNCULAR);
+    const oylar = await getData(SHEET_OYLAR);
+    const maclar = await getData(SHEET_MACLAR);
+
+    console.log("Oyuncular:", oyuncular);
+    console.log("Oylar:", oylar);
+    console.log("Maçlar:", maclar);
+
+    const container = document.getElementById("statsContainer");
+    container.innerHTML = ""; // Önceki içerik temizlensin
+
+    // Veri kontrolü
+    if (!Array.isArray(oyuncular) || !Array.isArray(oylar) || !Array.isArray(maclar)) {
+      container.innerText = "Veri yüklenemedi. Lütfen Sheet ve URL yapılandırmalarınızı kontrol edin.";
+      return;
+    }
+
+    // Oyuncu ID → İsim eşleşmesi
+    const oyuncuMap = {};
+    oyuncular.forEach(p => {
+      oyuncuMap[p.id] = p.isim;
+    });
+
+    // Oyuncu ID → aldığı puanlar
+    const puanlar = {};
+
+    oylar.forEach(({ mac_id, oylayan_id, oylanan_id, puan }) => {
+      if (!puanlar[oylanan_id]) puanlar[oylanan_id] = [];
+      puanlar[oylanan_id].push(Number(puan));
+    });
+
+    container.innerHTML += "<h2>🎯 Oyuncu Ortalama Puanları</h2>";
+
+    for (let oid in puanlar) {
+      const ort = (puanlar[oid].reduce((a, b) => a + b, 0) / puanlar[oid].length).toFixed(2);
+      container.innerHTML += `<div><strong>${oyuncuMap[oid] || oid}</strong> - Ortalama: ${ort} (${puanlar[oid].length} oy)</div>`;
+    }
+
+    container.innerHTML += "<hr><h2>🏅 Maçın Adamları</h2>";
+
+    // Her maç için maçın adamını seç
+    maclar.forEach(mac => {
+      const { id: macID, tarih } = mac;
+      const ilgiliOylar = oylar.filter(o => o.mac_id === macID);
+
+      const toplamlar = {};
+      ilgiliOylar.forEach(({ oylanan_id, puan }) => {
+        toplamlar[oylanan_id] = (toplamlar[oylanan_id] || 0) + Number(puan);
+      });
+
+      const kazanan = Object.entries(toplamlar).sort((a, b) => b[1] - a[1])[0];
+      if (kazanan) {
+        const isim = oyuncuMap[kazanan[0]] || kazanan[0];
+        container.innerHTML += `<div><strong>${tarih}</strong> maçının adamı: 🏅 ${isim} (${kazanan[1]} puan)</div>`;
+      }
+    });
   })();
 }
 
