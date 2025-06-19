@@ -28,7 +28,7 @@ async function postData(sheetTabId, row) {
     console.error('postData hatası:', error);
   }
 }
-*
+*/
 
 // 🟦 Maç Listesi (index.html)
 if (location.pathname.endsWith("index.html") || location.pathname === "/") {
