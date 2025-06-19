@@ -33,6 +33,7 @@ async function postData(sheetTabId, row) {
 if (location.pathname.endsWith("index.html") || location.pathname === "/") {
   (async () => {
     const maclar = await getData(SHEET_MACLAR);
+    console.log("maclar", maclar);
     const container = document.getElementById("matchList");
     container.innerHTML = "";
 
