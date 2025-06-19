@@ -41,7 +41,9 @@ if (location.pathname.endsWith("vote.html")) {
     const oyuncular = await getData(SHEET_OYUNCULAR);
     const oylar = await getData(SHEET_OYLAR);
 
-    const mac = maclar.find(m => m.id === macID);
+    //const mac = maclar.find(m => m.id === macID);
+    const mac = maclar.find(m => m.id.toString() === macID.toString());
+
     if (!mac) {
       return document.getElementById("voteContainer").innerText = "Maç bulunamadı";
     }
