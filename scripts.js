@@ -97,7 +97,7 @@ if (location.pathname.endsWith("vote.html")) {
     oyForm.appendChild(document.createElement("br"));
 
     oynayanlar.forEach(oid => {
-      const o = oyuncular.find(p => p[0] === oid);
+      const o = oyuncular.find(p => p.id === oid);
       if (o) {
         const wrapper = document.createElement("div");
         wrapper.classList.add("oycu");
