@@ -36,11 +36,15 @@ if (location.pathname.endsWith("vote.html")) {
   (async () => {
     const urlParams = new URLSearchParams(location.search);
     const macID = urlParams.get("mac");
+    
 console.log(macID)
+    
     const maclar = await getData(SHEET_MACLAR);       // [[id, tarih, saat, yer, oyuncuIDs], ...]
     const oyuncular = await getData(SHEET_OYUNCULAR); // [[id, isim], ...]
     const oylar = await getData(SHEET_OYLAR);         // [[macID, oylayanID, oylananID, puan], ...]
-
+    
+console.log(maclar.map(m => m.id));
+    
     // mac.id ile arama yapıyoruz artık
     //const mac = maclar.find(m => m.id === macID);
     const mac = maclar.find(m => m.id.toString() === macID);
