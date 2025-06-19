@@ -4,6 +4,7 @@ const SHEET_MACLAR = "Maclar";
 const SHEET_OYUNCULAR = "Oyuncular";
 const SHEET_OYLAR = "Oylar";
 
+/*
 async function getData(sheetTabId) {
   try {
     const res = await fetch(`${NOCODE_URL}?tabId=${sheetTabId}`);
@@ -27,30 +28,26 @@ async function postData(sheetTabId, row) {
     console.error('postData hatası:', error);
   }
 }
+*
 
-
-// 🗭 Ana Sayfa (index.html)
+// 🟦 Maç Listesi (index.html)
 if (location.pathname.endsWith("index.html") || location.pathname === "/") {
   (async () => {
     const maclar = await getData(SHEET_MACLAR);
-    console.log("maclar", maclar);
+    console.log("maclar verisi:", maclar);
+    
     const container = document.getElementById("matchList");
     container.innerHTML = "";
 
     if (!Array.isArray(maclar)) {
-  console.error("maclar array değil:", maclar);
-  return;
-}
-
-const macListesi = [...maclar].reverse(); // reverse yapmadan önce kopya al
+      container.innerHTML = "<p>Maç verisi alınamadı.</p>";
+      return;
+    }
 
     maclar.reverse().forEach(mac => {
-      const [id, tarihRaw, saatRaw, yer] = mac;
-      const tarih = new Date(tarihRaw).toLocaleDateString("tr-TR");
-      const saat = new Date(saatRaw).toLocaleTimeString("tr-TR", {
-        hour: "2-digit",
-        minute: "2-digit",
-      });
+      if (!mac || typeof mac !== "object") return;
+
+      const { id, tarih, saat, yer } = mac;
       const btn = `<a href="vote.html?mac=${id}">Oy Ver</a>`;
       container.innerHTML += `<div><strong>${tarih} ${saat}</strong> - ${yer} ${btn}</div>`;
     });
@@ -164,3 +161,43 @@ if (location.pathname.endsWith("vote.html")) {
     document.getElementById("voteContainer").appendChild(oyForm);
   })();
 }
+
+
+// 📦 Yardımcı Fonksiyonlar
+async function getData(sheetTabId) {
+    try {
+        const res = await fetch(`${NOCODE_URL}?tabId=${sheetTabId}`);
+        const json = await res.json();
+        return json.data || json;
+    } catch (error) {
+        console.error('getData hatası:', error);
+        return null;
+    }
+}
+
+
+
+
+
+async function postData(sheetTabId, row) {
+    const myHeaders = new Headers();
+    myHeaders.append("Content-Type", "application/json");
+
+    const requestOptions = {
+        method: "POST",
+        headers: myHeaders,
+        redirect: "follow",
+        body: JSON.stringify(row)  // dikkat: direkt [[...]]
+    };
+
+    try {
+        const response = await fetch(`${NOCODE_URL}?tabId=${sheetTabId}`, requestOptions);
+        const result = await response.text();
+        console.log(result);
+        return result;
+    } catch (error) {
+        console.error('postData hatası:', error);
+        throw error;
+    }
+}
+
