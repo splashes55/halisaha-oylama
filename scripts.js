@@ -35,20 +35,22 @@ if (location.pathname.endsWith("index.html") || location.pathname === "/") {
 if (location.pathname.endsWith("vote.html")) {
   (async () => {
     const urlParams = new URLSearchParams(location.search);
-    const macID = urlParams.get("mac");
-    
-console.log(macID)
-    
-    const maclar = await getData(SHEET_MACLAR);       // [[id, tarih, saat, yer, oyuncuIDs], ...]
-    const oyuncular = await getData(SHEET_OYUNCULAR); // [[id, isim], ...]
-    const oylar = await getData(SHEET_OYLAR);         // [[macID, oylayanID, oylananID, puan], ...]
-    
-console.log(maclar.map(m => m.id));
-    
-    // mac.id ile arama yapıyoruz artık
-    //const mac = maclar.find(m => m.id === macID);
-    const mac = maclar.find(m => m.id.toString() === macID);
-    if (!mac) return document.getElementById("voteContainer").innerText = "Maç bulunamadı";
+const macID = urlParams.get("mac")?.trim();
+
+console.log("macID param:", macID);
+console.log("maclar id listesi:", maclar.map(m => m.id));
+
+const macIDNum = Number(macID);
+
+const mac = maclar.find(m => {
+  if (!m || !m.id) return false;
+  return Number(m.id) === macIDNum;
+});
+
+if (!mac) {
+  document.getElementById("voteContainer").innerText = "Maç bulunamadı";
+  return;
+}
 
     const [id, tarih, saat, yer, oyuncuIDs] = mac;
     const oynayanlar = oyuncuIDs.split(",");
