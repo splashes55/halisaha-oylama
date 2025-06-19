@@ -41,11 +41,10 @@ if (location.pathname.endsWith("vote.html")) {
     const oyuncular = await getData(SHEET_OYUNCULAR); // [[id, isim], ...]
     const oylar = await getData(SHEET_OYLAR);         // [[macID, oylayanID, oylananID, puan], ...]
 
-    const mac = maclar.find(m => m[0] === macID);
-    if (!mac) {
-      document.getElementById("voteContainer").innerText = "Maç bulunamadı";
-      return;
-    }
+    // mac.id ile arama yapıyoruz artık
+    //const mac = maclar.find(m => m.id === macID);
+    const mac = maclar.find(m => m.id.toString() === macID);
+    if (!mac) return document.getElementById("voteContainer").innerText = "Maç bulunamadı";
 
     const [id, tarih, saat, yer, oyuncuIDs] = mac;
     const oynayanlar = oyuncuIDs.split(",");
