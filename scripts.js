@@ -265,22 +265,22 @@ async function getData(sheetTabId) {
 
 async function postData(sheetTabId, row) {
   try {
-    const response = await fetch(`${NOCODE_URL}?tabId=${sheetTabId}`, {
+    const res = await fetch(`${NOCODE_URL}?tabId=${sheetTabId}`, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(row)
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(row),
     });
-
-    const result = await response.json();
-    console.log("postData yanıtı:", result);
-    return result;
+    const json = await res.json();
+    if (json.error) {
+      console.error("API hata:", json.error);
+      return null;
+    }
+    return json;
   } catch (error) {
     console.error("postData hatası:", error);
     return null;
-  
-
+  }
+}
   }
 }
 
