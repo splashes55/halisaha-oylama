@@ -63,7 +63,9 @@ if (location.pathname.endsWith("vote.html")) {
     const oylar = await getData(SHEET_OYLAR);
 
     const mac = maclar.find(m => m.id === macID);
-    if (!mac) return document.getElementById("voteContainer").innerText = "Maç bulunamadı";
+    if (!mac) {
+      return document.getElementById("voteContainer").innerText = "Maç bulunamadı";
+    }
 
     const { id, tarih, saat, yer, oyuncular: oyuncuIDs } = mac;
     const oynayanlar = oyuncuIDs.split(",");
@@ -76,13 +78,31 @@ if (location.pathname.endsWith("vote.html")) {
       return;
     }
 
-    const oyForm = document.createElement("form");
-    const kendin = prompt("Oy kullanan oyuncunun ID’si nedir?");
+    const kendinSelect = document.createElement("select");
+    kendinSelect.name = "kendin";
+    kendinSelect.innerHTML = `<option value="">-- Kendini Seç --</option>`;
     oynayanlar.forEach(oid => {
-      if (oid === kendin) return; // kendine oy verme
       const o = oyuncular.find(p => p[0] === oid);
       if (o) {
-        oyForm.innerHTML += `
+        kendinSelect.innerHTML += `<option value="${o[0]}">${o[1]}</option>`;
+      }
+    });
+
+    const kendinLabel = document.createElement("label");
+    kendinLabel.innerText = "Oy kullanan kişi:";
+    kendinLabel.appendChild(kendinSelect);
+
+    const oyForm = document.createElement("form");
+    oyForm.appendChild(kendinLabel);
+    oyForm.appendChild(document.createElement("br"));
+
+    oynayanlar.forEach(oid => {
+      const o = oyuncular.find(p => p[0] === oid);
+      if (o) {
+        const wrapper = document.createElement("div");
+        wrapper.classList.add("oycu");
+
+        wrapper.innerHTML = `
           <label>${o[1]}:
             <select name="puan_${oid}">
               <option value="0">0</option>
@@ -92,7 +112,8 @@ if (location.pathname.endsWith("vote.html")) {
               <option value="4">4</option>
               <option value="5">5</option>
             </select>
-          </label><br>`;
+          </label>`;
+        oyForm.appendChild(wrapper);
       }
     });
 
@@ -101,13 +122,34 @@ if (location.pathname.endsWith("vote.html")) {
     btn.type = "submit";
     oyForm.appendChild(btn);
 
+    kendinSelect.addEventListener("change", () => {
+      const kendin = kendinSelect.value;
+      document.querySelectorAll(".oycu").forEach(div => {
+        const select = div.querySelector("select");
+        if (select.name === `puan_${kendin}`) {
+          select.disabled = true;
+          select.parentElement.style.opacity = 0.5;
+        } else {
+          select.disabled = false;
+          select.parentElement.style.opacity = 1;
+        }
+      });
+    });
+
     oyForm.onsubmit = async (e) => {
       e.preventDefault();
+      const kendin = kendinSelect.value;
+      if (!kendin) {
+        alert("Lütfen önce kendinizi seçin.");
+        return;
+      }
+
       for (let oid of oynayanlar) {
         if (oid === kendin) continue;
         const puan = oyForm[`puan_${oid}`].value;
         await postData(SHEET_OYLAR, [[macID, kendin, oid, puan]]);
       }
+
       document.getElementById("msg").innerText = "Oylar kaydedildi.";
       oyForm.remove();
     };
@@ -115,6 +157,7 @@ if (location.pathname.endsWith("vote.html")) {
     document.getElementById("voteContainer").appendChild(oyForm);
   })();
 }
+
 
 // 🟫 İstatistikler (stats.html)
 if (location.pathname.endsWith("stats.html")) {
