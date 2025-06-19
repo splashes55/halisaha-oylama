@@ -82,10 +82,10 @@ if (location.pathname.endsWith("vote.html")) {
     kendinSelect.name = "kendin";
     kendinSelect.innerHTML = `<option value="">-- Kendini Seç --</option>`;
     oynayanlar.forEach(oid => {
-      const o = oyuncular.find(p => p[0] === oid);
-      if (o) {
-        kendinSelect.innerHTML += `<option value="${o[0]}">${o[1]}</option>`;
-      }
+    const o = oyuncular.find(p => p.id === oid);
+    if (o) {
+    kendinSelect.innerHTML += `<option value="${o.id}">${o.isim}</option>`;
+    }
     });
 
     const kendinLabel = document.createElement("label");
