@@ -196,13 +196,22 @@ if (location.pathname.endsWith("vote.html")) {
 if (location.pathname.endsWith("stats.html")) {
   alert("çalıştı");
   (async () => {
-    const oyuncular = await getData(SHEET_OYUNCULAR); // [{id, isim}]
-    const oylar = await getData(SHEET_OYLAR); // [[macID, oylayanID, oylananID, puan]]
-    const maclar = await getData(SHEET_MACLAR); // [{id, tarih, saat, yer, oyuncular}]
+    const oyuncular = await getData(SHEET_OYUNCULAR);
+const oylar = await getData(SHEET_OYLAR);
+const maclar = await getData(SHEET_MACLAR);
 
-    console.log("Oyuncular:", oyuncular);
+console.log("Oyuncular:", oyuncular);
 console.log("Oylar:", oylar);
 console.log("Maçlar:", maclar);
+
+// Eğer veri gelmediyse burada uyarı göster
+const container = document.getElementById("statsContainer");
+container.innerHTML = ""; // "Yükleniyor..." yazısını sil
+
+if (!Array.isArray(oyuncular) || !Array.isArray(oylar) || !Array.isArray(maclar)) {
+  container.innerText = "Veri yüklenemedi. Lütfen Sheet ve URL yapılandırmalarınızı kontrol edin.";
+  return;
+}
 
 
     // Oyuncu ID → İsim eşleşmesi
