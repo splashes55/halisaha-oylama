@@ -97,25 +97,29 @@ if (location.pathname.endsWith("vote.html")) {
     oyForm.appendChild(document.createElement("br"));
 
     oynayanlar.forEach(oid => {
-      const o = oyuncular.find(p => p.id === oid);
-      if (o) {
-        const wrapper = document.createElement("div");
-        wrapper.classList.add("oycu");
+  const o = oyuncular.find(p => p.id === oid);
+  if (o) {
+    const wrapper = document.createElement("div");
+    wrapper.classList.add("oycu");
 
-        wrapper.innerHTML = `
-          <label>${o[1]}:
-            <select name="puan_${oid}">
-              <option value="0">0</option>
-              <option value="1">1</option>
-              <option value="2">2</option>
-              <option value="3">3</option>
-              <option value="4">4</option>
-              <option value="5">5</option>
-            </select>
-          </label>`;
-        oyForm.appendChild(wrapper);
-      }
-    });
+    wrapper.innerHTML = `
+      <label>${o.isim}:
+        <select name="puan_${oid}">
+          <option value="1">1</option>
+          <option value="2">2</option>
+          <option value="3">3</option>
+          <option value="4">4</option>
+          <option value="5">5</option>
+          <option value="6">6</option>
+          <option value="7">7</option>
+          <option value="8">8</option>
+          <option value="9">9</option>
+          <option value="10">10</option>
+        </select>
+      </label>`;
+    oyForm.appendChild(wrapper);
+  }
+});
 
     const btn = document.createElement("button");
     btn.innerText = "Oyları Gönder";
