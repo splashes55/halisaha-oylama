@@ -1,4 +1,4 @@
-alert("scripts.js yüklendi");
+
 
 
 // 🔗 SENİN NoCodeAPI bağlantını buraya yapıştır
@@ -194,6 +194,7 @@ if (location.pathname.endsWith("vote.html")) {
 
 // 🟫 İstatistikler (stats.html)
 if (location.pathname.endsWith("stats.html")) {
+  alert("çalıştı");
   (async () => {
     const oyuncular = await getData(SHEET_OYUNCULAR); // [{id, isim}]
     const oylar = await getData(SHEET_OYLAR); // [[macID, oylayanID, oylananID, puan]]
