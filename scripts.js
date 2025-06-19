@@ -2,7 +2,11 @@
 
 
 // 🔗 SENİN NoCodeAPI bağlantını buraya yapıştır
-const NOCODE_URL = "https://v1.nocodeapi.com/splashes55/google_sheets/xpifIRWdvUPEkSvU";
+//const NOCODE_URL = "https://v1.nocodeapi.com/splashes55/google_sheets/xpifIRWdvUPEkSvU";
+
+// 📌 API Temel URL — kendi Apps Script URL'ni buraya yaz
+const API_BASE_URL = "https://script.google.com/macros/s/AKfycbzfijtnu8jf6cS9dsivzvYy6VNYyHaoIBzt-pAjAmyxDtslMHnCYRZ4k37IEu__EHeXrA/exec";
+
 const SHEET_OYUNCULAR = "Oyuncular";
 const SHEET_MACLAR = "Maclar";
 const SHEET_OYLAR = "Oylar";
@@ -259,7 +263,7 @@ if (location.pathname === "/stats" || location.pathname.endsWith("stats.html")) 
 
 
 
-
+/*
 
 // 📦 Yardımcı Fonksiyonlar
 async function getData(sheetTabId) {
@@ -297,5 +301,33 @@ async function postData(sheetTabId, row) {
         console.error('postData hatası:', error);
         throw error;
     }
+}
+*/
+
+// ✅ Veri Çekme (GET)
+async function getData(tab) {
+  try {
+    const res = await fetch(`${API_BASE_URL}?action=get&tab=${tab}`);
+    const json = await res.json();
+    return json.data;
+  } catch (err) {
+    console.error("getData hatası:", err);
+    return [];
+  }
+}
+
+// ✅ Veri Gönderme (POST)
+async function postData(tab, rows) {
+  try {
+    const res = await fetch(`${API_BASE_URL}?action=post&tab=${tab}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(rows)
+    });
+    return await res.json();
+  } catch (err) {
+    console.error("postData hatası:", err);
+    return null;
+  }
 }
 
