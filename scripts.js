@@ -224,10 +224,10 @@ if (!Array.isArray(oyuncular) || !Array.isArray(oylar) || !Array.isArray(maclar)
 
     console.log("OY VERİSİ:", oylar, Array.isArray(oylar));
     
-    oylar.forEach(([macID, oylayanID, oylananID, puan]) => {
-      if (!puanlar[oylananID]) puanlar[oylananID] = [];
-      puanlar[oylananID].push(Number(puan));
-    });
+    oylar.forEach(({ mac_id, oylayan_id, oylanan_id, puan }) => {
+  if (!puanlar[oylanan_id]) puanlar[oylanan_id] = [];
+  puanlar[oylanan_id].push(Number(puan));
+});
 
     
     container.innerHTML = "<h2>🎯 Oyuncu Ortalama Puanları</h2>";
