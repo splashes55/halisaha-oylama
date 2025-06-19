@@ -260,16 +260,14 @@ async function getData(sheetTabId) {
 
 async function postData(sheetTabId, row) {
   try {
-    const res = await fetch(`${NOCODE_URL}?tabId=${sheetTabId}`, {
+    const response = await fetch(`${NOCODE_URL}?tabId=${sheetTabId}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(row),
+      body: JSON.stringify(row) // örn: [[macID, oylayanID, oylananID, puan, macAdamID]]
     });
-    const json = await res.json();
-    return json;
+    return await response.json();
   } catch (error) {
-    console.error("postData hatası:", error);
-    return null;
+    console.error('postData hatası:', error);
   }
 }
 
