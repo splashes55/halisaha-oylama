@@ -173,7 +173,7 @@ if (location.pathname.endsWith("vote.html")) {
     document.getElementById("msg").innerText = "❌ Oylar kaydedilemedi.";
   }
 };
-}
+
 
 
 
