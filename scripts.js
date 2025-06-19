@@ -1,3 +1,6 @@
+alert("scripts.js yüklendi");
+
+
 // 🔗 SENİN NoCodeAPI bağlantını buraya yapıştır
 const NOCODE_URL = "https://v1.nocodeapi.com/splashes55/google_sheets/xpifIRWdvUPEkSvU";
 const SHEET_OYUNCULAR = "Oyuncular";
