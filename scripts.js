@@ -279,8 +279,7 @@ async function postData(sheetTabId, row) {
   } catch (error) {
     console.error("postData hatası:", error);
     return null;
-  }
-}
+  
 
   }
 }
