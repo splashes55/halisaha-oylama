@@ -1,34 +1,10 @@
 // 🟨 Ortak Tanımlar
-const NOCODE_URL = "https://script.google.com/macros/s/AKfycbzfijtnu8jf6cS9dsivzvYy6VNYyHaoIBzt-pAjAmyxDtslMHnCYRZ4k37IEu__EHeXrA/exec"; // kendi Apps Script URL'in
+const NOCODE_URL = "https://script.google.com/macros/s/AKfycbycLnSqHEEJlTvEFxQcltneDtoP4nVNcjqfJhU2nmM8fsCHWqlGuIQXB3yWr1CDbTa94A/exec"; // kendi Apps Script URL'in
 const SHEET_MACLAR = "Maclar";
 const SHEET_OYUNCULAR = "Oyuncular";
 const SHEET_OYLAR = "Oylar";
 
-/*
-async function getData(sheetTabId) {
-  try {
-    const res = await fetch(`${NOCODE_URL}?tabId=${sheetTabId}`);
-    const json = await res.json();
-    return json.data || json;
-  } catch (error) {
-    console.error('getData hatası:', error);
-    return [];
-  }
-}
 
-async function postData(sheetTabId, row) {
-  try {
-    const response = await fetch(`${NOCODE_URL}?tabId=${sheetTabId}`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(row) // örn: [[macID, oylayanID, oylananID, puan, macAdamID]]
-    });
-    return await response.json();
-  } catch (error) {
-    console.error('postData hatası:', error);
-  }
-}
-*/
 
 // 🟦 Maç Listesi (index.html)
 if (location.pathname.endsWith("index.html") || location.pathname === "/") {
@@ -165,14 +141,14 @@ if (location.pathname.endsWith("vote.html")) {
 
 // 📦 Yardımcı Fonksiyonlar
 async function getData(sheetTabId) {
-    try {
-        const res = await fetch(`${NOCODE_URL}?tabId=${sheetTabId}`);
-        const json = await res.json();
-        return json.data || json;
-    } catch (error) {
-        console.error('getData hatası:', error);
-        return null;
-    }
+  try {
+    const res = await fetch(`${NOCODE_URL}?tabId=${sheetTabId}`);
+    const json = await res.json();
+    return json.data || json;
+  } catch (error) {
+    console.error("getData hatası:", error);
+    return null;
+  }
 }
 
 
