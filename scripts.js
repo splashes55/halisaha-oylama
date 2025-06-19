@@ -51,6 +51,8 @@ if (location.pathname.endsWith("index.html") || location.pathname === "/") {
   })();
 }
 
+//-------------------------------------------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 // 🟪 Oy Verme Sayfası (vote.html)
 if (location.pathname.endsWith("vote.html")) {
@@ -182,6 +184,10 @@ if (location.pathname.endsWith("vote.html")) {
 
 
 
+//-------------------------------------------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
 
 // 🟫 İstatistikler (stats.html)
 if (location.pathname.endsWith("stats.html")) {
@@ -189,6 +195,11 @@ if (location.pathname.endsWith("stats.html")) {
     const oyuncular = await getData(SHEET_OYUNCULAR); // [{id, isim}]
     const oylar = await getData(SHEET_OYLAR); // [[macID, oylayanID, oylananID, puan]]
     const maclar = await getData(SHEET_MACLAR); // [{id, tarih, saat, yer, oyuncular}]
+
+    console.log("Oyuncular:", oyuncular);
+console.log("Oylar:", oylar);
+console.log("Maçlar:", maclar);
+
 
     // Oyuncu ID → İsim eşleşmesi
     const oyuncuMap = {};
