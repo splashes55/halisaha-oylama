@@ -186,13 +186,15 @@ if (location.pathname.endsWith("vote.html")) {
 // 🟫 İstatistikler (stats.html)
 if (location.pathname.endsWith("stats.html")) {
   (async () => {
-    const oyuncular = await getData(SHEET_OYUNCULAR);
-    const oylar = await getData(SHEET_OYLAR);
-    const maclar = await getData(SHEET_MACLAR);
+    const oyuncular = await getData(SHEET_OYUNCULAR); // [{id, isim}]
+    const oylar = await getData(SHEET_OYLAR); // [[macID, oylayanID, oylananID, puan]]
+    const maclar = await getData(SHEET_MACLAR); // [{id, tarih, saat, yer, oyuncular}]
 
+    // Oyuncu ID → İsim eşleşmesi
     const oyuncuMap = {};
-    oyuncular.forEach(p => oyuncuMap[p[0]] = p[1]);
+    oyuncular.forEach(p => oyuncuMap[p.id] = p.isim);
 
+    // Oyuncu ID → aldığı puanlar
     const puanlar = {};
 
     oylar.forEach(([macID, oylayanID, oylananID, puan]) => {
@@ -201,27 +203,36 @@ if (location.pathname.endsWith("stats.html")) {
     });
 
     const container = document.getElementById("statsContainer");
+    container.innerHTML = "<h2>🎯 Oyuncu Ortalama Puanları</h2>";
+
     for (let oid in puanlar) {
       const ort = (puanlar[oid].reduce((a,b)=>a+b,0) / puanlar[oid].length).toFixed(2);
-      container.innerHTML += `<div><strong>${oyuncuMap[oid] || oid}</strong> - Ortalama: ${ort}</div>`;
+      container.innerHTML += `<div><strong>${oyuncuMap[oid] || oid}</strong> - Ortalama: ${ort} (${puanlar[oid].length} oy)</div>`;
     }
 
-    // Maçın adamı seçimi
+    container.innerHTML += "<hr><h2>🏅 Maçın Adamları</h2>";
+
+    // Her maç için maçın adamını seç
     maclar.forEach(mac => {
-      const [macID, tarih, saat, yer, oyuncuIDs] = mac;
+      const { id: macID, tarih } = mac;
       const ilgiliOylar = oylar.filter(o => o[0] === macID);
+
       const toplamlar = {};
-      ilgiliOylar.forEach(([_,__,oylanan,puan]) => {
+      ilgiliOylar.forEach(([_, __, oylanan, puan]) => {
         toplamlar[oylanan] = (toplamlar[oylanan] || 0) + Number(puan);
       });
-      const kazanan = Object.entries(toplamlar).sort((a,b)=>b[1]-a[1])[0];
+
+      const kazanan = Object.entries(toplamlar).sort((a, b) => b[1] - a[1])[0];
       if (kazanan) {
         const isim = oyuncuMap[kazanan[0]] || kazanan[0];
-        container.innerHTML += `<div>🏅 <strong>${tarih}</strong> maçının adamı: ${isim}</div>`;
+        container.innerHTML += `<div><strong>${tarih}</strong> maçının adamı: 🏅 ${isim} (${kazanan[1]} puan)</div>`;
       }
     });
   })();
 }
+
+
+
 
 // 📦 Yardımcı Fonksiyonlar
 async function getData(sheetTabId) {
