@@ -282,5 +282,5 @@ async function postData(sheetTabId, row) {
   }
 }
   }
-}
+
 
