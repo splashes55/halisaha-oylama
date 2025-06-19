@@ -78,14 +78,15 @@ if (location.pathname.endsWith("vote.html")) {
       return;
     }
 
+    // Kendini seç dropdown'u
     const kendinSelect = document.createElement("select");
     kendinSelect.name = "kendin";
     kendinSelect.innerHTML = `<option value="">-- Kendini Seç --</option>`;
     oynayanlar.forEach(oid => {
-    const o = oyuncular.find(p => p.id === oid);
-    if (o) {
-    kendinSelect.innerHTML += `<option value="${o.id}">${o.isim}</option>`;
-    }
+      const o = oyuncular.find(p => p.id === oid);
+      if (o) {
+        kendinSelect.innerHTML += `<option value="${o.id}">${o.isim}</option>`;
+      }
     });
 
     const kendinLabel = document.createElement("label");
@@ -96,50 +97,63 @@ if (location.pathname.endsWith("vote.html")) {
     oyForm.appendChild(kendinLabel);
     oyForm.appendChild(document.createElement("br"));
 
+    // Oy verme alanları, başlangıçta gizli
     oynayanlar.forEach(oid => {
-  const o = oyuncular.find(p => p.id === oid);
-  if (o) {
-    const wrapper = document.createElement("div");
-    wrapper.classList.add("oycu");
+      const o = oyuncular.find(p => p.id === oid);
+      if (o) {
+        const wrapper = document.createElement("div");
+        wrapper.classList.add("oycu");
+        wrapper.style.display = "none"; // Başlangıçta gizli
 
-    wrapper.innerHTML = `
-      <label>${o.isim}:
-        <select name="puan_${oid}">
-          <option value="1">1</option>
-          <option value="2">2</option>
-          <option value="3">3</option>
-          <option value="4">4</option>
-          <option value="5">5</option>
-          <option value="6">6</option>
-          <option value="7">7</option>
-          <option value="8">8</option>
-          <option value="9">9</option>
-          <option value="10">10</option>
-        </select>
-      </label>`;
-    oyForm.appendChild(wrapper);
-  }
-});
+        wrapper.innerHTML = `
+          <label>${o.isim}:
+            <select name="puan_${oid}">
+              <option value="1">1</option>
+              <option value="2">2</option>
+              <option value="3">3</option>
+              <option value="4">4</option>
+              <option value="5">5</option>
+              <option value="6">6</option>
+              <option value="7">7</option>
+              <option value="8">8</option>
+              <option value="9">9</option>
+              <option value="10">10</option>
+            </select>
+          </label>`;
+        oyForm.appendChild(wrapper);
+      }
+    });
 
+    // Gönder butonu
     const btn = document.createElement("button");
     btn.innerText = "Oyları Gönder";
     btn.type = "submit";
     oyForm.appendChild(btn);
 
+    // Kendini seçince oy verme alanlarını göster / gizle
     kendinSelect.addEventListener("change", () => {
       const kendin = kendinSelect.value;
+
+      document.querySelectorAll(".oycu").forEach(div => {
+        div.style.display = "none"; // Önce hepsini gizle
+      });
+
+      if (!kendin) return; // Seçim yoksa gösterme
+
       document.querySelectorAll(".oycu").forEach(div => {
         const select = div.querySelector("select");
         if (select.name === `puan_${kendin}`) {
           select.disabled = true;
-          select.parentElement.style.opacity = 0.5;
+          div.style.opacity = 0.5;
         } else {
           select.disabled = false;
-          select.parentElement.style.opacity = 1;
+          div.style.opacity = 1;
         }
+        div.style.display = "block"; // Görünür yap
       });
     });
 
+    // Form submit işlemi
     oyForm.onsubmit = async (e) => {
       e.preventDefault();
       const kendin = kendinSelect.value;
@@ -161,6 +175,7 @@ if (location.pathname.endsWith("vote.html")) {
     document.getElementById("voteContainer").appendChild(oyForm);
   })();
 }
+
 
 
 // 🟫 İstatistikler (stats.html)
