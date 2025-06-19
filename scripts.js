@@ -4,14 +4,12 @@ const SHEET_MACLAR = "Maclar";
 const SHEET_OYUNCULAR = "Oyuncular";
 const SHEET_OYLAR = "Oylar";
 
-
-
 // 🟦 Maç Listesi (index.html)
 if (location.pathname.endsWith("index.html") || location.pathname === "/") {
   (async () => {
     const maclar = await getData(SHEET_MACLAR);
     console.log("maclar verisi:", maclar);
-    
+
     const container = document.getElementById("matchList");
     container.innerHTML = "";
 
@@ -29,7 +27,6 @@ if (location.pathname.endsWith("index.html") || location.pathname === "/") {
     });
   })();
 }
-
 
 // 🟪 Oy Verme Sayfası (vote.html)
 if (location.pathname.endsWith("vote.html")) {
@@ -65,7 +62,7 @@ if (location.pathname.endsWith("vote.html")) {
     const kendinSelect = document.createElement("select");
     kendinSelect.name = "kendin";
     kendinSelect.innerHTML = `<option value="">-- Kendini Seç --</option>`;
-    
+
     oynayanlar.forEach(oid => {
       const o = oyuncular.find(p => p.id.toString() === oid.toString());
       if (o) {
@@ -149,39 +146,37 @@ if (location.pathname.endsWith("vote.html")) {
 
     // Form gönderildiğinde oyları kaydet
     oyForm.onsubmit = async (e) => {
-  e.preventDefault();
-  const kendin = kendinSelect.value;
-  if (!kendin) {
-    alert("Lütfen önce kendinizi seçin.");
-    return;
-  }
+      e.preventDefault();
+      const kendin = kendinSelect.value;
+      if (!kendin) {
+        alert("Lütfen önce kendinizi seçin.");
+        return;
+      }
 
-  const oylar = [];
+      const oylar = [];
 
-  for (let oid of oynayanlar) {
-    if (oid === kendin) continue;
-    const puan = oyForm[`puan_${oid}`].value;
-    oylar.push([macID, kendin, oid, puan]);
-  }
+      for (let oid of oynayanlar) {
+        if (oid === kendin) continue;
+        const puan = oyForm[`puan_${oid}`].value;
+        oylar.push([macID, kendin, oid, puan]);
+      }
 
-  const sonuc = await postData(SHEET_OYLAR, oylar);
+      const sonuc = await postData(SHEET_OYLAR, oylar);
 
-  if (sonuc?.success) {
-    document.getElementById("msg").innerText = "✅ Oylar kaydedildi.";
-    oyForm.remove();
-  } else {
-    document.getElementById("msg").innerText = "❌ Oylar kaydedilemedi.";
-  }
-};
+      if (sonuc?.success) {
+        document.getElementById("msg").innerText = "✅ Oylar kaydedildi.";
+        oyForm.remove();
+      } else {
+        document.getElementById("msg").innerText = "❌ Oylar kaydedilemedi.";
+      }
+    };
 
-
-
-
+    document.getElementById("voteContainer").appendChild(oyForm);
+  })();
+}
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------------------------
 //-------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-
 
 // 🟫 İstatistikler (stats.html)
 if (location.pathname === "/stats" || location.pathname.endsWith("stats.html")) {
@@ -248,7 +243,6 @@ if (location.pathname === "/stats" || location.pathname.endsWith("stats.html")) 
   })();
 }
 
-
 // 📦 Yardımcı Fonksiyonlar
 async function getData(sheetTabId) {
   try {
@@ -260,8 +254,6 @@ async function getData(sheetTabId) {
     return null;
   }
 }
-
-
 
 async function postData(sheetTabId, row) {
   try {
@@ -281,5 +273,3 @@ async function postData(sheetTabId, row) {
     return null;
   }
 }
-
-
