@@ -36,6 +36,13 @@ if (location.pathname.endsWith("index.html") || location.pathname === "/") {
     const container = document.getElementById("matchList");
     container.innerHTML = "";
 
+    if (!Array.isArray(maclar)) {
+  console.error("maclar array değil:", maclar);
+  return;
+}
+
+const macListesi = [...maclar].reverse(); // reverse yapmadan önce kopya al
+
     maclar.reverse().forEach(mac => {
       const [id, tarihRaw, saatRaw, yer] = mac;
       const tarih = new Date(tarihRaw).toLocaleDateString("tr-TR");
