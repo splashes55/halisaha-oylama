@@ -281,6 +281,5 @@ async function postData(sheetTabId, row) {
     return null;
   }
 }
-  }
 
 
