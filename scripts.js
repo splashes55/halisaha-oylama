@@ -31,109 +31,119 @@ if (location.pathname.endsWith("index.html") || location.pathname === "/") {
 }
 
 
-// 🕪 Oy Verme Sayfası (vote.html)
+// 🟪 Oy Verme Sayfası (vote.html)
 if (location.pathname.endsWith("vote.html")) {
   (async () => {
     const urlParams = new URLSearchParams(location.search);
     const macID = urlParams.get("mac");
 
-    const maclar = await getData(SHEET_MACLAR);
-    const oyuncular = await getData(SHEET_OYUNCULAR);
-    const oylar = await getData(SHEET_OYLAR);
+    const maclar = await getData(SHEET_MACLAR);       // [[id, tarih, saat, yer, oyuncuIDs], ...]
+    const oyuncular = await getData(SHEET_OYUNCULAR); // [[id, isim], ...]
+    const oylar = await getData(SHEET_OYLAR);         // [[macID, oylayanID, oylananID, puan], ...]
 
-    // mac.id ile arama yapıyoruz artık
-    //const mac = maclar.find(m => m.id === macID);
-    const mac = maclar.find(m => m.id.toString() === macID);
-    if (!mac) return document.getElementById("voteContainer").innerText = "Maç bulunamadı";
-
-    // Nesne yapısına göre alanlar
-    const { id, tarih, saat, yer, oyuncular: oyuncuIDs } = mac;
-    const oynayanlar = oyuncuIDs.split(",");
-
-    const macZamani = new Date(tarih);
-    const simdi = new Date();
-    if ((simdi - macZamani) / 3600000 > 24) {
-      return document.getElementById("voteContainer").innerText = "Oy verme süreci dolmuş.";
+    const mac = maclar.find(m => m[0] === macID);
+    if (!mac) {
+      document.getElementById("voteContainer").innerText = "Maç bulunamadı";
+      return;
     }
 
+    const [id, tarih, saat, yer, oyuncuIDs] = mac;
+    const oynayanlar = oyuncuIDs.split(",");
+
+    // Tarih ve saat kontrolü (24 saat içinde oy verilebilsin)
+    const macZamani = new Date(`${tarih}T${saat}`);
+    const simdi = new Date();
+    const farkSaat = (simdi - macZamani) / (1000 * 60 * 60);
+    if (farkSaat > 24) {
+      document.getElementById("voteContainer").innerText = "Oy verme süresi doldu.";
+      return;
+    }
+
+    // Kendini seç dropdown
     const kendinSelect = document.createElement("select");
     kendinSelect.name = "kendin";
     kendinSelect.innerHTML = `<option value="">-- Kendini Seç --</option>`;
     oynayanlar.forEach(oid => {
-      // Burada oyuncular artık nesne dizisi, id alanına göre bul
-      const o = oyuncular.find(p => p.id === oid);
-      if (o) kendinSelect.innerHTML += `<option value="${o.id}">${o.isim}</option>`;
+      const o = oyuncular.find(p => p[0] === oid);
+      if (o) {
+        kendinSelect.innerHTML += `<option value="${o[0]}">${o[1]}</option>`;
+      }
     });
 
+    const kendinLabel = document.createElement("label");
+    kendinLabel.innerText = "Oy kullanan kişi: ";
+    kendinLabel.appendChild(kendinSelect);
+
     const oyForm = document.createElement("form");
-    oyForm.appendChild(document.createTextNode("Oy kullanan kişi: "));
-    oyForm.appendChild(kendinSelect);
+    oyForm.appendChild(kendinLabel);
     oyForm.appendChild(document.createElement("br"));
 
-    const oyuncuDiv = document.createElement("div");
-    oyuncuDiv.id = "oyuncuListesi";
-    oyForm.appendChild(oyuncuDiv);
+    // Diğer oyuncular için puan seçim kutuları (ilk başta gizli)
+    oynayanlar.forEach(oid => {
+      const o = oyuncular.find(p => p[0] === oid);
+      if (o) {
+        const wrapper = document.createElement("div");
+        wrapper.classList.add("oycu");
+        wrapper.style.display = "none"; // Başta gizli
 
-    const macAdamiWrapper = document.createElement("div");
-    macAdamiWrapper.id = "macAdamiDiv";
-    oyForm.appendChild(macAdamiWrapper);
+        wrapper.innerHTML = `
+          <label>${o[1]}:
+            <select name="puan_${oid}">
+              <option value="0">0</option>
+              <option value="1">1</option>
+              <option value="2">2</option>
+              <option value="3">3</option>
+              <option value="4">4</option>
+              <option value="5">5</option>
+            </select>
+          </label>
+        `;
+        oyForm.appendChild(wrapper);
+      }
+    });
 
+    // Oyları gönder butonu (başta gizli)
     const btn = document.createElement("button");
     btn.innerText = "Oyları Gönder";
     btn.type = "submit";
     btn.style.display = "none";
     oyForm.appendChild(btn);
 
+    // Kendini seçince diğer oyuncuları göster, kendine oy verme
     kendinSelect.addEventListener("change", () => {
       const kendin = kendinSelect.value;
-      oyuncuDiv.innerHTML = "";
-      macAdamiWrapper.innerHTML = "";
 
       if (!kendin) {
         btn.style.display = "none";
+      } else {
+        btn.style.display = "inline-block";
+      }
+
+      document.querySelectorAll(".oycu").forEach(div => {
+        const select = div.querySelector("select");
+        if (select.name === `puan_${kendin}`) {
+          div.style.display = "none"; // kendine oy verme alanı gizli
+        } else {
+          div.style.display = kendin ? "block" : "none";
+        }
+      });
+    });
+
+    oyForm.onsubmit = async (e) => {
+      e.preventDefault();
+
+      const kendin = kendinSelect.value;
+      if (!kendin) {
+        alert("Lütfen önce kendinizi seçin.");
         return;
       }
 
-      // Oy Listesi
-      oynayanlar.forEach(oid => {
-        if (oid === kendin) return;
-        const o = oyuncular.find(p => p.id === oid);
-        if (o) {
-          const div = document.createElement("div");
-          div.classList.add("oycu");
-          div.innerHTML = `<label>${o.isim}: <select name="puan_${oid}">
-            ${[...Array(11).keys()].map(i => `<option value="${i}">${i}</option>`).join("")}
-          </select></label>`;
-          oyuncuDiv.appendChild(div);
-        }
-      });
-
-      // Maçın Adamı
-      const macAdamiLabel = document.createElement("label");
-      macAdamiLabel.innerText = "🏅 Maçın Adamı: ";
-      const macAdamiSelect = document.createElement("select");
-      macAdamiSelect.name = "mac_adami";
-      macAdamiSelect.innerHTML = `<option value="">-- Seçin --</option>`;
-      oynayanlar.forEach(oid => {
-        if (oid === kendin) return;
-        const o = oyuncular.find(p => p.id === oid);
-        if (o) macAdamiSelect.innerHTML += `<option value="${o.id}">${o.isim}</option>`;
-      });
-      macAdamiLabel.appendChild(macAdamiSelect);
-      macAdamiWrapper.appendChild(macAdamiLabel);
-
-      btn.style.display = "inline-block";
-    });
-
-    oyForm.onsubmit = async e => {
-      e.preventDefault();
-      const kendin = kendinSelect.value;
-      const macAdamiID = oyForm["mac_adami"].value;
       for (let oid of oynayanlar) {
         if (oid === kendin) continue;
         const puan = oyForm[`puan_${oid}`].value;
-        await postData(SHEET_OYLAR, [[macID, kendin, oid, puan, macAdamiID]]);
+        await postData(SHEET_OYLAR, [[macID, kendin, oid, puan]]);
       }
+
       document.getElementById("msg").innerText = "Oylar kaydedildi.";
       oyForm.remove();
     };
@@ -141,6 +151,7 @@ if (location.pathname.endsWith("vote.html")) {
     document.getElementById("voteContainer").appendChild(oyForm);
   })();
 }
+
 
 
 
