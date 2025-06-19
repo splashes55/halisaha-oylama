@@ -81,7 +81,7 @@ if (location.pathname.endsWith("vote.html")) {
     
     // Oy verme alanları (başlangıçta gizli)
     oynayanlar.forEach(oid => {
-      const o = oyuncular.find(p => p.id === oid);
+      const o = oyuncular.find(p => p.id.toString() === oid.toString());
       if (o) {
         const wrapper = document.createElement("div");
         wrapper.classList.add("oycu");
