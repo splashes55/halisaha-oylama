@@ -258,27 +258,18 @@ async function getData(sheetTabId) {
 
 
 
-
-
 async function postData(sheetTabId, row) {
-    const myHeaders = new Headers();
-    myHeaders.append("Content-Type", "application/json");
-
-    const requestOptions = {
-        method: "POST",
-        headers: myHeaders,
-        redirect: "follow",
-        body: JSON.stringify(row)  // dikkat: direkt [[...]]
-    };
-
-    try {
-        const response = await fetch(`${NOCODE_URL}?tabId=${sheetTabId}`, requestOptions);
-        const result = await response.text();
-        console.log(result);
-        return result;
-    } catch (error) {
-        console.error('postData hatası:', error);
-        throw error;
-    }
+  try {
+    const res = await fetch(`${NOCODE_URL}?tabId=${sheetTabId}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(row),
+    });
+    const json = await res.json();
+    return json;
+  } catch (error) {
+    console.error("postData hatası:", error);
+    return null;
+  }
 }
 
