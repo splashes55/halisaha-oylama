@@ -35,27 +35,20 @@ if (location.pathname.endsWith("index.html") || location.pathname === "/") {
 if (location.pathname.endsWith("vote.html")) {
   (async () => {
     const urlParams = new URLSearchParams(location.search);
-const macID = urlParams.get("mac")?.trim();
+    const macID = urlParams.get("mac");
 
-console.log("macID param:", macID);
-console.log("maclar id listesi:", maclar.map(m => m.id));
+    const maclar = await getData(SHEET_MACLAR);
+    const oyuncular = await getData(SHEET_OYUNCULAR);
+    const oylar = await getData(SHEET_OYLAR);
 
-const macIDNum = Number(macID);
+    const mac = maclar.find(m => m.id === macID);
+    if (!mac) {
+      return document.getElementById("voteContainer").innerText = "Maç bulunamadı";
+    }
 
-const mac = maclar.find(m => {
-  if (!m || !m.id) return false;
-  return Number(m.id) === macIDNum;
-});
-
-if (!mac) {
-  document.getElementById("voteContainer").innerText = "Maç bulunamadı";
-  return;
-}
-
-    const [id, tarih, saat, yer, oyuncuIDs] = mac;
+    const { id, tarih, saat, yer, oyuncular: oyuncuIDs } = mac;
     const oynayanlar = oyuncuIDs.split(",");
 
-    // Tarih ve saat kontrolü (24 saat içinde oy verilebilsin)
     const macZamani = new Date(`${tarih}T${saat}`);
     const simdi = new Date();
     const farkSaat = (simdi - macZamani) / (1000 * 60 * 60);
@@ -64,79 +57,88 @@ if (!mac) {
       return;
     }
 
-    // Kendini seç dropdown
     const kendinSelect = document.createElement("select");
     kendinSelect.name = "kendin";
     kendinSelect.innerHTML = `<option value="">-- Kendini Seç --</option>`;
     oynayanlar.forEach(oid => {
-      const o = oyuncular.find(p => p[0] === oid);
+      const o = oyuncular.find(p => p.id === oid);
       if (o) {
-        kendinSelect.innerHTML += `<option value="${o[0]}">${o[1]}</option>`;
+        kendinSelect.innerHTML += `<option value="${o.id}">${o.isim}</option>`;
       }
     });
 
     const kendinLabel = document.createElement("label");
-    kendinLabel.innerText = "Oy kullanan kişi: ";
+    kendinLabel.innerText = "Oy kullanan kişi:";
     kendinLabel.appendChild(kendinSelect);
 
     const oyForm = document.createElement("form");
     oyForm.appendChild(kendinLabel);
     oyForm.appendChild(document.createElement("br"));
 
-    // Diğer oyuncular için puan seçim kutuları (ilk başta gizli)
+    // Oy verme alanları (başlangıçta gizli)
     oynayanlar.forEach(oid => {
-      const o = oyuncular.find(p => p[0] === oid);
+      const o = oyuncular.find(p => p.id === oid);
       if (o) {
         const wrapper = document.createElement("div");
         wrapper.classList.add("oycu");
-        wrapper.style.display = "none"; // Başta gizli
+        wrapper.style.display = "none"; // başta gizli
 
         wrapper.innerHTML = `
-          <label>${o[1]}:
+          <label>${o.isim}:
             <select name="puan_${oid}">
-              <option value="0">0</option>
               <option value="1">1</option>
               <option value="2">2</option>
               <option value="3">3</option>
               <option value="4">4</option>
               <option value="5">5</option>
+              <option value="6">6</option>
+              <option value="7">7</option>
+              <option value="8">8</option>
+              <option value="9">9</option>
+              <option value="10">10</option>
             </select>
-          </label>
-        `;
+          </label>`;
         oyForm.appendChild(wrapper);
       }
     });
 
-    // Oyları gönder butonu (başta gizli)
+    // Gönder butonu (başta gizli)
     const btn = document.createElement("button");
     btn.innerText = "Oyları Gönder";
     btn.type = "submit";
     btn.style.display = "none";
     oyForm.appendChild(btn);
 
-    // Kendini seçince diğer oyuncuları göster, kendine oy verme
+    // Kendini seçince diğer alanları göster / gizle
     kendinSelect.addEventListener("change", () => {
       const kendin = kendinSelect.value;
 
+      document.querySelectorAll(".oycu").forEach(div => {
+        div.style.display = "none"; // önce hepsini gizle
+      });
+
       if (!kendin) {
-        btn.style.display = "none";
-      } else {
-        btn.style.display = "inline-block";
+        btn.style.display = "none"; // buton gizli kalır
+        return;
       }
 
       document.querySelectorAll(".oycu").forEach(div => {
         const select = div.querySelector("select");
         if (select.name === `puan_${kendin}`) {
-          div.style.display = "none"; // kendine oy verme alanı gizli
+          select.disabled = true;
+          div.style.opacity = 0.5;
         } else {
-          div.style.display = kendin ? "block" : "none";
+          select.disabled = false;
+          div.style.opacity = 1;
         }
+        div.style.display = "block";
       });
+
+      btn.style.display = "inline-block"; // butonu göster
     });
 
     oyForm.onsubmit = async (e) => {
       e.preventDefault();
-
       const kendin = kendinSelect.value;
       if (!kendin) {
         alert("Lütfen önce kendinizi seçin.");
@@ -156,7 +158,6 @@ if (!mac) {
     document.getElementById("voteContainer").appendChild(oyForm);
   })();
 }
-
 
 
 
