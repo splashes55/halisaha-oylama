@@ -226,7 +226,7 @@ if (!Array.isArray(oyuncular) || !Array.isArray(oylar) || !Array.isArray(maclar)
       puanlar[oylananID].push(Number(puan));
     });
 
-    const container = document.getElementById("statsContainer");
+    
     container.innerHTML = "<h2>🎯 Oyuncu Ortalama Puanları</h2>";
 
     for (let oid in puanlar) {
