@@ -77,6 +77,7 @@ if (location.pathname.endsWith("vote.html")) {
     oyForm.appendChild(kendinLabel);
     oyForm.appendChild(document.createElement("br"));
 
+    /*
     // Oy verme alanları (başlangıçta gizli)
     oynayanlar.forEach(oid => {
       const o = oyuncular.find(p => p.id === oid);
@@ -103,7 +104,30 @@ if (location.pathname.endsWith("vote.html")) {
         oyForm.appendChild(wrapper);
       }
     });
+*/
 
+// Oy verme kutularını oluştur (ilk başta hepsini ekliyoruz ama seçilen oyuncuya göre disable edeceğiz)
+oynayanlar.forEach(oid => {
+  const o = oyuncular.find(p => p[0] === oid);
+  if (o) {
+    const wrapper = document.createElement("div");
+    wrapper.classList.add("oycu");
+
+    wrapper.innerHTML = `
+      <label>${o[1]}:
+        <select name="puan_${oid}">
+          <option value="0">0</option>
+          <option value="1">1</option>
+          <option value="2">2</option>
+          <option value="3">3</option>
+          <option value="4">4</option>
+          <option value="5">5</option>
+        </select>
+      </label>`;
+    oyForm.appendChild(wrapper);
+  }
+});
+    
     // Gönder butonu (başta gizli)
     const btn = document.createElement("button");
     btn.innerText = "Oyları Gönder";
