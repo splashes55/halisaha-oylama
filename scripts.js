@@ -9,7 +9,7 @@ async function addPlayer() {
   const isim = document.getElementById("playerName").value.trim();
   if (!isim) return alert("İsim giriniz");
   const id = Date.now();
-  await postData(SHEET_OYUNCULAR, [[id, isim]]);
+  await postData("Oyuncular", [[id, isim]]);
   document.getElementById("msg").innerText = "Oyuncu eklendi.";
 }
 
@@ -151,10 +151,29 @@ async function getData(sheet) {
   const json = await res.json();
   return json.data || json;
 }
-async function postData(sheet, row) {
-  await fetch(`${NOCODE_URL}?tabId=${sheet}`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ data: row })
-  });
+
+
+
+
+async function postData(sheetTabId, row) {
+    const myHeaders = new Headers();
+    myHeaders.append("Content-Type", "application/json");
+
+    const requestOptions = {
+        method: "POST",
+        headers: myHeaders,
+        redirect: "follow",
+        body: JSON.stringify(row)  // dikkat: direkt [[...]]
+    };
+
+    try {
+        const response = await fetch(`${NOCODE_URL}?tabId=${sheetTabId}`, requestOptions);
+        const result = await response.text();
+        console.log(result);
+        return result;
+    } catch (error) {
+        console.error('postData hatası:', error);
+        throw error;
+    }
 }
+
