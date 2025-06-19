@@ -62,10 +62,10 @@ if (location.pathname.endsWith("vote.html")) {
     const oyuncular = await getData(SHEET_OYUNCULAR);
     const oylar = await getData(SHEET_OYLAR);
 
-    const mac = maclar.find(m => m[0] === macID);
+    const mac = maclar.find(m => m.id === macID);
     if (!mac) return document.getElementById("voteContainer").innerText = "Maç bulunamadı";
 
-    const [id, tarih, saat, yer, oyuncuIDs] = mac;
+    const { id, tarih, saat, yer, oyuncular: oyuncuIDs } = mac;
     const oynayanlar = oyuncuIDs.split(",");
 
     const macZamani = new Date(`${tarih}T${saat}`);
