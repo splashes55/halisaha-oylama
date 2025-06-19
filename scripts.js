@@ -31,6 +31,7 @@ async function addMatch() {
 if (location.pathname.endsWith("index.html") || location.pathname === "/") {
   (async () => {
     const maclar = await getData(SHEET_MACLAR);
+    console.log("maclar verisi:", maclar);
     const container = document.getElementById("matchList");
     container.innerHTML = "";
     maclar.reverse().forEach(mac => {
