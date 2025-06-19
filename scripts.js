@@ -105,7 +105,7 @@ if (location.pathname.endsWith("vote.html")) {
       }
     });
 */
-
+console.log("oyuncular dizisi örnek:", oyuncular[0]);
 // Oy verme kutularını oluştur (ilk başta hepsini ekliyoruz ama seçilen oyuncuya göre disable edeceğiz)
 oynayanlar.forEach(oid => {
   const o = oyuncular.find(p => p[0] === oid);
