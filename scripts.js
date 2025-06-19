@@ -147,12 +147,12 @@ if (location.pathname.endsWith("stats.html")) {
 
 // 📦 Yardımcı Fonksiyonlar
 async function getData(sheet) {
-  const res = await fetch(`${NOCODE_URL}?tab=${sheet}`);
+  const res = await fetch(`${NOCODE_URL}?tabId=${sheet}`);
   const json = await res.json();
   return json.data || json;
 }
 async function postData(sheet, row) {
-  await fetch(`${NOCODE_URL}?tab=${sheet}`, {
+  await fetch(`${NOCODE_URL}?tabId=${sheet}`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ data: row })
