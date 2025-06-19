@@ -37,20 +37,22 @@ if (location.pathname.endsWith("vote.html")) {
     const urlParams = new URLSearchParams(location.search);
     const macID = urlParams.get("mac");
 
+    // Verileri al
     const maclar = await getData(SHEET_MACLAR);
     const oyuncular = await getData(SHEET_OYUNCULAR);
     const oylar = await getData(SHEET_OYLAR);
 
-    //const mac = maclar.find(m => m.id === macID);
+    // Maçı bul, id karşılaştırmasını string olarak yap
     const mac = maclar.find(m => m.id.toString() === macID.toString());
-
     if (!mac) {
       return document.getElementById("voteContainer").innerText = "Maç bulunamadı";
     }
 
+    // Maç bilgilerini al
     const { id, tarih, saat, yer, oyuncular: oyuncuIDs } = mac;
     const oynayanlar = oyuncuIDs.split(",");
 
+    // Tarih kontrolü: 24 saati geçtiyse oy verilemez
     const macZamani = new Date(`${tarih}T${saat}`);
     const simdi = new Date();
     const farkSaat = (simdi - macZamani) / (1000 * 60 * 60);
@@ -59,33 +61,34 @@ if (location.pathname.endsWith("vote.html")) {
       return;
     }
 
+    // Oy kullanan kişinin seçileceği dropdown
     const kendinSelect = document.createElement("select");
     kendinSelect.name = "kendin";
     kendinSelect.innerHTML = `<option value="">-- Kendini Seç --</option>`;
+    
     oynayanlar.forEach(oid => {
-  // oid genelde string olabilir, o yüzden id'yi stringe çevirip karşılaştırmak iyi olur
-  const o = oyuncular.find(p => p.id.toString() === oid.toString());
-  if (o) {
-    kendinSelect.innerHTML += `<option value="${o.id}">${o.isim}</option>`;
-  }
-});
+      const o = oyuncular.find(p => p.id.toString() === oid.toString());
+      if (o) {
+        kendinSelect.innerHTML += `<option value="${o.id}">${o.isim}</option>`;
+      }
+    });
 
     const kendinLabel = document.createElement("label");
     kendinLabel.innerText = "Oy kullanan kişi:";
     kendinLabel.appendChild(kendinSelect);
 
+    // Oy verme formu
     const oyForm = document.createElement("form");
     oyForm.appendChild(kendinLabel);
     oyForm.appendChild(document.createElement("br"));
 
-    
     // Oy verme alanları (başlangıçta gizli)
     oynayanlar.forEach(oid => {
       const o = oyuncular.find(p => p.id.toString() === oid.toString());
       if (o) {
         const wrapper = document.createElement("div");
         wrapper.classList.add("oycu");
-        wrapper.style.display = "none"; // başta gizli
+        wrapper.style.display = "none"; // gizli başta
 
         wrapper.innerHTML = `
           <label>${o.isim}:
@@ -106,8 +109,6 @@ if (location.pathname.endsWith("vote.html")) {
       }
     });
 
-
-    
     // Gönder butonu (başta gizli)
     const btn = document.createElement("button");
     btn.innerText = "Oyları Gönder";
@@ -115,23 +116,26 @@ if (location.pathname.endsWith("vote.html")) {
     btn.style.display = "none";
     oyForm.appendChild(btn);
 
-    // Kendini seçince diğer alanları göster / gizle
+    // Kendin seçildiğinde diğer oyuncular görünür ve seçilen kişi disable olur
     kendinSelect.addEventListener("change", () => {
       const kendin = kendinSelect.value;
 
+      // Önce hepsini gizle
       document.querySelectorAll(".oycu").forEach(div => {
-        div.style.display = "none"; // önce hepsini gizle
+        div.style.display = "none";
       });
 
+      // Eğer seçim yoksa butonu gizle ve çık
       if (!kendin) {
-        btn.style.display = "none"; // buton gizli kalır
+        btn.style.display = "none";
         return;
       }
 
+      // Diğer oyuncular gösterilsin
       document.querySelectorAll(".oycu").forEach(div => {
         const select = div.querySelector("select");
         if (select.name === `puan_${kendin}`) {
-          select.disabled = true;
+          select.disabled = true;  // kendine oy verme
           div.style.opacity = 0.5;
         } else {
           select.disabled = false;
@@ -143,6 +147,7 @@ if (location.pathname.endsWith("vote.html")) {
       btn.style.display = "inline-block"; // butonu göster
     });
 
+    // Form gönderildiğinde oyları kaydet
     oyForm.onsubmit = async (e) => {
       e.preventDefault();
       const kendin = kendinSelect.value;
