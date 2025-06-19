@@ -36,7 +36,7 @@ if (location.pathname.endsWith("vote.html")) {
   (async () => {
     const urlParams = new URLSearchParams(location.search);
     const macID = urlParams.get("mac");
-
+console.log(macID)
     const maclar = await getData(SHEET_MACLAR);       // [[id, tarih, saat, yer, oyuncuIDs], ...]
     const oyuncular = await getData(SHEET_OYUNCULAR); // [[id, isim], ...]
     const oylar = await getData(SHEET_OYLAR);         // [[macID, oylayanID, oylananID, puan], ...]
