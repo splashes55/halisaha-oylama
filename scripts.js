@@ -35,7 +35,7 @@ if (location.pathname.endsWith("index.html") || location.pathname === "/") {
     const container = document.getElementById("matchList");
     container.innerHTML = "";
     maclar.reverse().forEach(mac => {
-      const [id, tarih, saat, yer] = mac;
+      const { id, tarih, saat, yer } = mac;
       const btn = `<a href="vote.html?mac=${id}">Oy Ver</a>`;
       container.innerHTML += `<div><strong>${tarih} ${saat}</strong> - ${yer} ${btn}</div>`;
     });
