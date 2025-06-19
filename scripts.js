@@ -195,45 +195,44 @@ if (location.pathname.endsWith("vote.html")) {
 // 🟫 İstatistikler (stats.html)
 if (location.pathname === "/stats" || location.pathname.endsWith("stats.html")) {
 
-  alert("çalıştı");
+  alert("İstatistik sayfası kodu çalıştı ✅");
+
   (async () => {
     const oyuncular = await getData(SHEET_OYUNCULAR);
-const oylar = await getData(SHEET_OYLAR);
-const maclar = await getData(SHEET_MACLAR);
+    const oylar = await getData(SHEET_OYLAR);
+    const maclar = await getData(SHEET_MACLAR);
 
-console.log("Oyuncular:", oyuncular);
-console.log("Oylar:", oylar);
-console.log("Maçlar:", maclar);
+    console.log("Oyuncular:", oyuncular);
+    console.log("Oylar:", oylar);
+    console.log("Maçlar:", maclar);
 
-// Eğer veri gelmediyse burada uyarı göster
-const container = document.getElementById("statsContainer");
-container.innerHTML = ""; // "Yükleniyor..." yazısını sil
+    const container = document.getElementById("statsContainer");
+    container.innerHTML = ""; // Önceki içerik temizlensin
 
-if (!Array.isArray(oyuncular) || !Array.isArray(oylar) || !Array.isArray(maclar)) {
-  container.innerText = "Veri yüklenemedi. Lütfen Sheet ve URL yapılandırmalarınızı kontrol edin.";
-  return;
-}
-
+    // Veri kontrolü
+    if (!Array.isArray(oyuncular) || !Array.isArray(oylar) || !Array.isArray(maclar)) {
+      container.innerText = "Veri yüklenemedi. Lütfen Sheet ve URL yapılandırmalarınızı kontrol edin.";
+      return;
+    }
 
     // Oyuncu ID → İsim eşleşmesi
     const oyuncuMap = {};
-    oyuncular.forEach(p => oyuncuMap[p.id] = p.isim);
+    oyuncular.forEach(p => {
+      oyuncuMap[p.id] = p.isim;
+    });
 
     // Oyuncu ID → aldığı puanlar
     const puanlar = {};
 
-    console.log("OY VERİSİ:", oylar, Array.isArray(oylar));
-    
     oylar.forEach(({ mac_id, oylayan_id, oylanan_id, puan }) => {
-  if (!puanlar[oylanan_id]) puanlar[oylanan_id] = [];
-  puanlar[oylanan_id].push(Number(puan));
-});
+      if (!puanlar[oylanan_id]) puanlar[oylanan_id] = [];
+      puanlar[oylanan_id].push(Number(puan));
+    });
 
-    
-    container.innerHTML = "<h2>🎯 Oyuncu Ortalama Puanları</h2>";
+    container.innerHTML += "<h2>🎯 Oyuncu Ortalama Puanları</h2>";
 
     for (let oid in puanlar) {
-      const ort = (puanlar[oid].reduce((a,b)=>a+b,0) / puanlar[oid].length).toFixed(2);
+      const ort = (puanlar[oid].reduce((a, b) => a + b, 0) / puanlar[oid].length).toFixed(2);
       container.innerHTML += `<div><strong>${oyuncuMap[oid] || oid}</strong> - Ortalama: ${ort} (${puanlar[oid].length} oy)</div>`;
     }
 
@@ -242,11 +241,11 @@ if (!Array.isArray(oyuncular) || !Array.isArray(oylar) || !Array.isArray(maclar)
     // Her maç için maçın adamını seç
     maclar.forEach(mac => {
       const { id: macID, tarih } = mac;
-      const ilgiliOylar = oylar.filter(o => o[0] === macID);
+      const ilgiliOylar = oylar.filter(o => o.mac_id === macID);
 
       const toplamlar = {};
-      ilgiliOylar.forEach(([_, __, oylanan, puan]) => {
-        toplamlar[oylanan] = (toplamlar[oylanan] || 0) + Number(puan);
+      ilgiliOylar.forEach(({ oylanan_id, puan }) => {
+        toplamlar[oylanan_id] = (toplamlar[oylanan_id] || 0) + Number(puan);
       });
 
       const kazanan = Object.entries(toplamlar).sort((a, b) => b[1] - a[1])[0];
@@ -257,6 +256,7 @@ if (!Array.isArray(oyuncular) || !Array.isArray(oylar) || !Array.isArray(maclar)
     });
   })();
 }
+
 
 
 
