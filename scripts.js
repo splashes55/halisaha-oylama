@@ -101,17 +101,19 @@ if (location.pathname.endsWith("vote.html")) {
     oyForm.appendChild(kendinLabel);
     oyForm.appendChild(document.createElement("br"));
 
-    // Oy verme alanları (başlangıçta gizli)
+    // Oy verme alanları (kendin seçilince gösterilecek)
+    const oyAlanlariWrapper = document.createElement("div");
+    oyAlanlariWrapper.style.display = "none";
+
     oynayanlar.forEach(oid => {
       const o = oyuncular.find(p => p.id === oid);
       if (o) {
         const wrapper = document.createElement("div");
         wrapper.classList.add("oycu");
-        wrapper.style.display = "none"; // başta gizli
 
         wrapper.innerHTML = `
           <label>${o.isim}:
-            <select name="puan_${oid}">
+            <select name="puan_${oid}">              
               <option value="1">1</option>
               <option value="2">2</option>
               <option value="3">3</option>
@@ -124,43 +126,77 @@ if (location.pathname.endsWith("vote.html")) {
               <option value="10">10</option>
             </select>
           </label>`;
-        oyForm.appendChild(wrapper);
+        oyAlanlariWrapper.appendChild(wrapper);
       }
     });
 
-    // Gönder butonu (başta gizli)
+    oyForm.appendChild(oyAlanlariWrapper);
+
+    // --- MAÇIN ADAMI dropdown ---
+    const adamWrapper = document.createElement("div");
+    adamWrapper.style.display = "none";
+    adamWrapper.style.marginTop = "20px";
+
+    const adamLabel = document.createElement("label");
+    adamLabel.innerText = "🏅 Maçın Adamı:";
+    adamLabel.style.display = "block";
+    adamLabel.style.marginBottom = "5px";
+
+    const adamSelect = document.createElement("select");
+    adamSelect.name = "mac_adam_id";
+    adamSelect.innerHTML = `<option value="">-- Seçiniz --</option>`;
+
+    oynayanlar.forEach(oid => {
+      if (oid === kendinSelect.value) return; // kendini çıkart
+      const o = oyuncular.find(p => p.id === oid);
+      if (o) {
+        adamSelect.innerHTML += `<option value="${o.id}">${o.isim}</option>`;
+      }
+    });
+
+    adamWrapper.appendChild(adamLabel);
+    adamWrapper.appendChild(adamSelect);
+    oyForm.appendChild(adamWrapper);
+
     const btn = document.createElement("button");
     btn.innerText = "Oyları Gönder";
     btn.type = "submit";
     btn.style.display = "none";
     oyForm.appendChild(btn);
 
-    // Kendini seçince diğer alanları göster / gizle
     kendinSelect.addEventListener("change", () => {
       const kendin = kendinSelect.value;
-
-      document.querySelectorAll(".oycu").forEach(div => {
-        div.style.display = "none"; // önce hepsini gizle
-      });
-
       if (!kendin) {
-        btn.style.display = "none"; // buton gizli kalır
+        oyAlanlariWrapper.style.display = "none";
+        adamWrapper.style.display = "none";
+        btn.style.display = "none";
         return;
       }
+      oyAlanlariWrapper.style.display = "block";
+      adamWrapper.style.display = "block";
+      btn.style.display = "inline-block";
 
+      // Kendini puan verme seçeneklerinden çıkar
       document.querySelectorAll(".oycu").forEach(div => {
         const select = div.querySelector("select");
         if (select.name === `puan_${kendin}`) {
           select.disabled = true;
-          div.style.opacity = 0.5;
+          select.parentElement.style.opacity = 0.5;
         } else {
           select.disabled = false;
-          div.style.opacity = 1;
+          select.parentElement.style.opacity = 1;
         }
-        div.style.display = "block";
       });
 
-      btn.style.display = "inline-block"; // butonu göster
+      // Maçın adamı seçeneğini güncelle (kendini çıkar)
+      adamSelect.innerHTML = `<option value="">-- Seçiniz --</option>`;
+      oynayanlar.forEach(oid => {
+        if (oid === kendin) return;
+        const o = oyuncular.find(p => p.id === oid);
+        if (o) {
+          adamSelect.innerHTML += `<option value="${o.id}">${o.isim}</option>`;
+        }
+      });
     });
 
     oyForm.onsubmit = async (e) => {
@@ -171,10 +207,19 @@ if (location.pathname.endsWith("vote.html")) {
         return;
       }
 
+      // Önce oylar gönderilsin
       for (let oid of oynayanlar) {
         if (oid === kendin) continue;
         const puan = oyForm[`puan_${oid}`].value;
         await postData(SHEET_OYLAR, [[macID, kendin, oid, puan]]);
+      }
+
+      // Sonra maçın adamı bilgisi gönderilsin
+      const macAdamID = adamSelect.value;
+      if (macAdamID) {
+        await postData(SHEET_OYLAR, [[macID, kendin, "mac_adam_id", macAdamID]]);
+        // Ya da maç tablosunda güncellemek için farklı bir method gerekir, 
+        // Sheet yapına bağlı, sen belirtirsen yardımcı olurum.
       }
 
       document.getElementById("msg").innerText = "Oylar kaydedildi.";
@@ -184,6 +229,7 @@ if (location.pathname.endsWith("vote.html")) {
     document.getElementById("voteContainer").appendChild(oyForm);
   })();
 }
+
 
 
 
