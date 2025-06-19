@@ -132,31 +132,6 @@ if (location.pathname.endsWith("vote.html")) {
 
     oyForm.appendChild(oyAlanlariWrapper);
 
-    // --- MAÇIN ADAMI dropdown ---
-    const adamWrapper = document.createElement("div");
-    adamWrapper.style.display = "none";
-    adamWrapper.style.marginTop = "20px";
-
-    const adamLabel = document.createElement("label");
-    adamLabel.innerText = "🏅 Maçın Adamı:";
-    adamLabel.style.display = "block";
-    adamLabel.style.marginBottom = "5px";
-
-    const adamSelect = document.createElement("select");
-    adamSelect.name = "mac_adam_id";
-    adamSelect.innerHTML = `<option value="">-- Seçiniz --</option>`;
-
-    oynayanlar.forEach(oid => {
-      if (oid === kendinSelect.value) return; // kendini çıkart
-      const o = oyuncular.find(p => p.id === oid);
-      if (o) {
-        adamSelect.innerHTML += `<option value="${o.id}">${o.isim}</option>`;
-      }
-    });
-
-    adamWrapper.appendChild(adamLabel);
-    adamWrapper.appendChild(adamSelect);
-    oyForm.appendChild(adamWrapper);
 
     const btn = document.createElement("button");
     btn.innerText = "Oyları Gönder";
@@ -188,16 +163,7 @@ if (location.pathname.endsWith("vote.html")) {
         }
       });
 
-      // Maçın adamı seçeneğini güncelle (kendini çıkar)
-      adamSelect.innerHTML = `<option value="">-- Seçiniz --</option>`;
-      oynayanlar.forEach(oid => {
-        if (oid === kendin) return;
-        const o = oyuncular.find(p => p.id === oid);
-        if (o) {
-          adamSelect.innerHTML += `<option value="${o.id}">${o.isim}</option>`;
-        }
-      });
-    });
+      
 
     oyForm.onsubmit = async (e) => {
       e.preventDefault();
