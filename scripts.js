@@ -39,33 +39,41 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       maclar.reverse().forEach(mac => {
-        if (!mac || typeof mac !== "object") return;
+  if (!mac || typeof mac !== "object") return;
 
-        const { id, tarih, saat, yer } = mac;
+  const { id, tarih, saat, yer } = mac;
 
-        // Tarih ve saat nesneleri
-        const tarihObj = new Date(tarih);
-        const saatObj = new Date(saat);
+  // Tarih kısmını Date olarak al
+  const tarihObj = new Date(tarih);
 
-        // Türkiye saat dilimi (UTC+3) düzeltmesi
-        const localDate = new Date(tarihObj.getTime() + 3 * 60 * 60 * 1000);
-        const localSaat = new Date(saatObj.getTime() + 3 * 60 * 60 * 1000);
+  // Saat stringini sadece saat ve dakika olarak alalım (ör: "23:00" veya "23:00:00")
+  // Eğer saat tam Date formatında geldiyse bunu stringe çevirelim
+  let saatStrRaw = saat;
+  if (typeof saat === "string") {
+    saatStrRaw = saat.split('T')[1] || saat; // "23:00:00.000Z" ise "23:00:00.000Z"
+  }
 
-        // Tarih formatı: 18.06.2025
-        const tarihStr = `${localDate.getDate().toString().padStart(2, '0')}.${(localDate.getMonth() + 1).toString().padStart(2, '0')}.${localDate.getFullYear()}`;
+  // Sadece saat ve dakika kısmını al (ilk 5 karakter "HH:MM")
+  const saatHM = saatStrRaw.substr(0, 5);
 
-        // Saat aralığı: 23-24
-       const saatBasla = localSaat.getHours();
-const saatBitis = (saatBasla === 23) ? 24 : saatBasla + 1;
-const saatStr = `${saatBasla}-${saatBitis}`;
+  // tarihObj’yi kullanarak, yeni Date objesi oluşturup saat ve dakikayı ayarla
+  const [saatD, dakikaD] = saatHM.split(":").map(Number);
+  const macTarihiSaatli = new Date(tarihObj);
+  macTarihiSaatli.setHours(saatD, dakikaD, 0, 0);
 
-        // Açıklama metni
-        const aciklama = `${yer} - ${tarihStr} tarihi ${saatStr} saatleri arasında oynanan maç`;
+  // Tarih formatı
+  const tarihStr = `${macTarihiSaatli.getDate().toString().padStart(2, '0')}.${(macTarihiSaatli.getMonth() + 1).toString().padStart(2, '0')}.${macTarihiSaatli.getFullYear()}`;
 
-        const btn = `<a href="vote.html?mac=${id}">Oy Ver</a>`;
+  const saatBasla = macTarihiSaatli.getHours();
+  const saatBitis = (saatBasla === 23) ? 24 : saatBasla + 1;
+  const saatStr = `${saatBasla}-${saatBitis}`;
 
-        container.innerHTML += `<div><strong>${aciklama}</strong> ${btn}</div>`;
-      });
+  const aciklama = `${yer} - ${tarihStr} tarihi ${saatStr} saatleri arasında oynanan maç`;
+
+  const btn = `<a href="vote.html?mac=${id}">Oy Ver</a>`;
+
+  container.innerHTML += `<div><strong>${aciklama}</strong> ${btn}</div>`;
+});
     })();
   }
 });
