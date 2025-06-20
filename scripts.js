@@ -405,11 +405,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Konumlama tablosu (örnek yerler: % olarak)
     const pozisyonKoordinatlari = {
-      GK: [50, 95],
-      DEF: [30, 75],
-      MID: [50, 50],
-      FWD: [50, 20]
-    };
+  GK: [50, 95],
+  DC: [50, 75],
+  DL: [30, 75],
+  DR: [70, 75],
+  MC: [50, 50],
+  FL: [30, 50],
+  FR: [70, 50],
+  FC: [50, 20],
+};
 
     oyuncuIDs.forEach((oid, i) => {
   const oyuncu = oyuncular.find(p => p.id.toString() === oid.toString());
