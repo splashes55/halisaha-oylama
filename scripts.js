@@ -44,6 +44,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const { id, tarih, saat, yer } = mac;
 
   const tarihObj = new Date(tarih);
+       console.log("tarihObj:", tarihObj);
   const saatObj = new Date(saat);
 
   // Saat bilgisi UTC olarak alınır
