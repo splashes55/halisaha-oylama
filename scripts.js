@@ -286,21 +286,47 @@ if (location.pathname === "/new-player" || location.pathname.endsWith("new-playe
 
 //YENİ MAÇ KAYDI EKLEME
 if (location.pathname === "/new-match" || location.pathname.endsWith("new-match.html")) {
+  // Oyuncuları listele
+  document.addEventListener("DOMContentLoaded", async () => {
+    const oyuncular = await getData(SHEET_OYUNCULAR);
+    const select = document.getElementById("oyuncularSec");
+    select.innerHTML = "";
+
+    if (!oyuncular || oyuncular.length === 0) {
+      select.innerHTML = "<option disabled>Oyuncu bulunamadı</option>";
+      return;
+    }
+
+    oyuncular.forEach(o => {
+      const option = document.createElement("option");
+      option.value = o.id;
+      option.textContent = o.isim;
+      select.appendChild(option);
+    });
+  });
+
+
+
+  
+
+  // Maç ekleme fonksiyonu
   async function addMatch() {
     const msg = document.getElementById("msg");
     const tarih = document.getElementById("tarih").value;
     const saat = document.getElementById("saatSec").value;
     const yer = document.getElementById("yer").value.trim();
-    const oyuncuIDs = document.getElementById("playerIds").value.trim();
+    const select = document.getElementById("oyuncularSec");
+    const secilenIDs = Array.from(select.selectedOptions).map(opt => opt.value);
 
-    if (!tarih || !saat || !yer || !oyuncuIDs) {
+    if (!tarih || !saat || !yer || secilenIDs.length === 0) {
       msg.innerText = "❌ Lütfen tüm alanları doldurun.";
       return;
     }
 
     const id = Date.now().toString(); // benzersiz ID
+    const oyuncularStr = secilenIDs.join(",");
 
-    const yeniMacSatiri = [[id, tarih, saat, yer, oyuncuIDs]];
+    const yeniMacSatiri = [[id, tarih, saat, yer, oyuncularStr]];
 
     msg.innerText = "Kaydediliyor...";
 
@@ -308,19 +334,18 @@ if (location.pathname === "/new-match" || location.pathname.endsWith("new-match.
 
     if (sonuc?.success) {
       msg.innerText = `✅ Maç başarıyla eklendi.`;
-      // Alanları sıfırla
       document.getElementById("tarih").value = "";
       document.getElementById("saatSec").value = "";
       document.getElementById("yer").value = "";
-      document.getElementById("playerIds").value = "";
+      select.selectedIndex = -1;
     } else {
       msg.innerText = "❌ Maç eklenemedi. Lütfen tekrar deneyin.";
     }
   }
 
-  // Fonksiyonu global scope'a aç
   window.addMatch = addMatch;
 }
+
 
 
 
