@@ -255,6 +255,7 @@ async function getData(sheetTabId) {
   }
 }
 
+/*
 // ✅ Veri Gönderme (POST)
 async function postData(tab, rows) {
   try {
@@ -270,7 +271,7 @@ async function postData(tab, rows) {
   }
 }
 
-/*
+
 fetch("https://script.google.com/macros/s/AKfycbzSDYG-CVkfUlz5E2OrXZAcDP75zY1k6i8F733X0NFSXDaLaDLeCcGQN8kobqeT556waQ/exec?tabId=Oylar", {
   method: "POST",
   headers: {
@@ -304,7 +305,7 @@ async function postData(sheetTabId, row) {
     return null;
   }
 }
-
+*/
 async function postData(sheet, row) {
   await fetch(`${NOCODE_URL}?tabId=${sheet}`, {
     method:"POST", headers: {"Content-Type":"application/json"}, body: JSON.stringify(row)
@@ -332,4 +333,4 @@ async function postData(sheetTabId, row) {
         throw error;
     }
 }
-*/
+
