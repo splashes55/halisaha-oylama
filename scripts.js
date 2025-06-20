@@ -1,74 +1,74 @@
 // 🟨 Ortak Tanımlar
-const NOCODE_URL = "https://script.google.com/macros/s/AKfycbwqykFtn0fIVawx8sqhLouaBvYk4gGxrQw3yfdIATbYQDhsf27Gsyh25hZyC0irk0O8tA/exec"; // kendi Apps Script URL'in
+const NOCODE_URL = "https://script.google.com/macros/s/AKfycbwqykFtn0fIVawx8sqhLouaBvYk4gGxrQw3yfdIATbYQDhsf27Gsyh25hZyC0irk0O8tA/exec";
 const SHEET_MACLAR = "Maclar";
 const SHEET_OYUNCULAR = "Oyuncular";
 const SHEET_OYLAR = "Oylar";
 
-
-// URL parametresinde ?admin=gizlisifre123 varsa admin olarak işaretle
+// URL parametresi ile admin girişi (sayfa yüklenmeden önce)
 (() => {
   const urlParams = new URLSearchParams(window.location.search);
   if (urlParams.get("admin") === "gizlisifre123") {
     localStorage.setItem("admin", "true");
-    // Parametreyi temizleyip sayfayı yenile
+    // Parametreyi temizle URL’den
     const newUrl = window.location.origin + window.location.pathname;
     window.history.replaceState({}, document.title, newUrl);
   }
 })();
 
-
-// 🟦 Maç Listesi (index.html)
+// Sayfa yüklendiğinde admin linklerini göster/gizle ve maçları yükle
 document.addEventListener("DOMContentLoaded", () => {
   const isAdmin = localStorage.getItem("admin") === "true";
 
+  // Admin olmayanlardan admin-only class’lı linkleri gizle
   document.querySelectorAll(".admin-only").forEach(el => {
     el.style.display = isAdmin ? "inline" : "none";
   });
-if (location.pathname.endsWith("index.html") || location.pathname === "/" || document.body.id === "anasayfa") {
-  (async () => {
-    const maclar = await getData(SHEET_MACLAR);
-    console.log("maclar verisi:", maclar);
 
-    const container = document.getElementById("matchList");
-    container.innerHTML = "";
+  // 🟦 Maç Listesi (index.html)
+  if (location.pathname.endsWith("index.html") || location.pathname === "/" || document.body.id === "anasayfa") {
+    (async () => {
+      const maclar = await getData(SHEET_MACLAR);
+      console.log("maclar verisi:", maclar);
 
-    if (!Array.isArray(maclar)) {
-      container.innerHTML = "<p>Maç verisi alınamadı.</p>";
-      return;
-    }
+      const container = document.getElementById("matchList");
+      container.innerHTML = "";
 
-    maclar.reverse().forEach(mac => {
-  if (!mac || typeof mac !== "object") return;
+      if (!Array.isArray(maclar)) {
+        container.innerHTML = "<p>Maç verisi alınamadı.</p>";
+        return;
+      }
 
-  const { id, tarih, saat, yer } = mac;
+      maclar.reverse().forEach(mac => {
+        if (!mac || typeof mac !== "object") return;
 
-  // Tarih ve saat nesneleri
-  const tarihObj = new Date(tarih);
-  const saatObj = new Date(saat);
+        const { id, tarih, saat, yer } = mac;
 
-  // Türkiye saat dilimi (UTC+3) düzeltmesi
-  const localDate = new Date(tarihObj.getTime() + 3 * 60 * 60 * 1000);
-  const localSaat = new Date(saatObj.getTime() + 3 * 60 * 60 * 1000);
+        // Tarih ve saat nesneleri
+        const tarihObj = new Date(tarih);
+        const saatObj = new Date(saat);
 
-  // Tarih formatı: 18.06.2025
-  const tarihStr = `${localDate.getDate().toString().padStart(2, '0')}.${(localDate.getMonth() + 1).toString().padStart(2, '0')}.${localDate.getFullYear()}`;
+        // Türkiye saat dilimi (UTC+3) düzeltmesi
+        const localDate = new Date(tarihObj.getTime() + 3 * 60 * 60 * 1000);
+        const localSaat = new Date(saatObj.getTime() + 3 * 60 * 60 * 1000);
 
-  // Saat aralığı: 23-24
-  const saatBasla = localSaat.getHours();
-  const saatBitis = (saatBasla + 1) % 24;
-  const saatStr = `${saatBasla}-${saatBitis}`;
+        // Tarih formatı: 18.06.2025
+        const tarihStr = `${localDate.getDate().toString().padStart(2, '0')}.${(localDate.getMonth() + 1).toString().padStart(2, '0')}.${localDate.getFullYear()}`;
 
-  // Açıklama metni
-  const aciklama = `${yer} - ${tarihStr} tarihi ${saatStr} saatleri arasında oynanan maç`;
+        // Saat aralığı: 23-24
+        const saatBasla = localSaat.getHours();
+        const saatBitis = (saatBasla + 1) % 24;
+        const saatStr = `${saatBasla}-${saatBitis}`;
 
-  const btn = `<a href="vote.html?mac=${id}">Oy Ver</a>`;
+        // Açıklama metni
+        const aciklama = `${yer} - ${tarihStr} tarihi ${saatStr} saatleri arasında oynanan maç`;
 
-  container.innerHTML += `<div><strong>${aciklama}</strong> ${btn}</div>`;
+        const btn = `<a href="vote.html?mac=${id}">Oy Ver</a>`;
+
+        container.innerHTML += `<div><strong>${aciklama}</strong> ${btn}</div>`;
+      });
+    })();
+  }
 });
-
-  })();
-}
-  });
 
 // 🟪 Oy Verme Sayfası (vote.html)
 if (location.pathname.endsWith("vote.html")) {
@@ -76,22 +76,18 @@ if (location.pathname.endsWith("vote.html")) {
     const urlParams = new URLSearchParams(location.search);
     const macID = urlParams.get("mac");
 
-    // Verileri al
     const maclar = await getData(SHEET_MACLAR);
     const oyuncular = await getData(SHEET_OYUNCULAR);
     const oylar = await getData(SHEET_OYLAR);
 
-    // Maçı bul, id karşılaştırmasını string olarak yap
     const mac = maclar.find(m => m.id.toString() === macID.toString());
     if (!mac) {
       return document.getElementById("voteContainer").innerText = "Maç bulunamadı";
     }
 
-    // Maç bilgilerini al
     const { id, tarih, saat, yer, oyuncular: oyuncuIDs } = mac;
     const oynayanlar = oyuncuIDs.split(",");
 
-    // Tarih kontrolü: 24 saati geçtiyse oy verilemez
     const macZamani = new Date(`${tarih}T${saat}`);
     const simdi = new Date();
     const farkSaat = (simdi - macZamani) / (1000 * 60 * 60);
@@ -100,7 +96,6 @@ if (location.pathname.endsWith("vote.html")) {
       return;
     }
 
-    // Oy kullanan kişinin seçileceği dropdown
     const kendinSelect = document.createElement("select");
     kendinSelect.name = "kendin";
     kendinSelect.innerHTML = `<option value="">-- Kendini Seç --</option>`;
@@ -116,18 +111,16 @@ if (location.pathname.endsWith("vote.html")) {
     kendinLabel.innerText = "Oy kullanan kişi:";
     kendinLabel.appendChild(kendinSelect);
 
-    // Oy verme formu
     const oyForm = document.createElement("form");
     oyForm.appendChild(kendinLabel);
     oyForm.appendChild(document.createElement("br"));
 
-    // Oy verme alanları (başlangıçta gizli)
     oynayanlar.forEach(oid => {
       const o = oyuncular.find(p => p.id.toString() === oid.toString());
       if (o) {
         const wrapper = document.createElement("div");
         wrapper.classList.add("oycu");
-        wrapper.style.display = "none"; // gizli başta
+        wrapper.style.display = "none";
 
         wrapper.innerHTML = `
           <label>${o.isim}:
@@ -148,33 +141,28 @@ if (location.pathname.endsWith("vote.html")) {
       }
     });
 
-    // Gönder butonu (başta gizli)
     const btn = document.createElement("button");
     btn.innerText = "Oyları Gönder";
     btn.type = "submit";
     btn.style.display = "none";
     oyForm.appendChild(btn);
 
-    // Kendin seçildiğinde diğer oyuncular görünür ve seçilen kişi disable olur
     kendinSelect.addEventListener("change", () => {
       const kendin = kendinSelect.value;
 
-      // Önce hepsini gizle
       document.querySelectorAll(".oycu").forEach(div => {
         div.style.display = "none";
       });
 
-      // Eğer seçim yoksa butonu gizle ve çık
       if (!kendin) {
         btn.style.display = "none";
         return;
       }
 
-      // Diğer oyuncular gösterilsin
       document.querySelectorAll(".oycu").forEach(div => {
         const select = div.querySelector("select");
         if (select.name === `puan_${kendin}`) {
-          select.disabled = true;  // kendine oy verme
+          select.disabled = true;
           div.style.opacity = 0.5;
         } else {
           select.disabled = false;
@@ -183,10 +171,9 @@ if (location.pathname.endsWith("vote.html")) {
         div.style.display = "block";
       });
 
-      btn.style.display = "inline-block"; // butonu göster
+      btn.style.display = "inline-block";
     });
 
-    // Form gönderildiğinde oyları kaydet
     oyForm.onsubmit = async (e) => {
       e.preventDefault();
       const kendin = kendinSelect.value;
@@ -218,38 +205,27 @@ if (location.pathname.endsWith("vote.html")) {
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------------------------
-//-------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 // 🟫 İstatistikler (stats.html)
 if (location.pathname === "/stats" || location.pathname.endsWith("stats.html")) {
-
-  alert("İstatistik sayfası kodu çalıştı ✅");
-
   (async () => {
     const oyuncular = await getData(SHEET_OYUNCULAR);
     const oylar = await getData(SHEET_OYLAR);
     const maclar = await getData(SHEET_MACLAR);
 
-    console.log("Oyuncular:", oyuncular);
-    console.log("Oylar:", oylar);
-    console.log("Maçlar:", maclar);
-
     const container = document.getElementById("statsContainer");
-    container.innerHTML = ""; // Önceki içerik temizlensin
+    container.innerHTML = "";
 
-    // Veri kontrolü
     if (!Array.isArray(oyuncular) || !Array.isArray(oylar) || !Array.isArray(maclar)) {
       container.innerText = "Veri yüklenemedi. Lütfen Sheet ve URL yapılandırmalarınızı kontrol edin.";
       return;
     }
 
-    // Oyuncu ID → İsim eşleşmesi
     const oyuncuMap = {};
     oyuncular.forEach(p => {
       oyuncuMap[p.id] = p.isim;
     });
 
-    // Oyuncu ID → aldığı puanlar
     const puanlar = {};
 
     oylar.forEach(({ mac_id, oylayan_id, oylanan_id, puan }) => {
@@ -266,7 +242,6 @@ if (location.pathname === "/stats" || location.pathname.endsWith("stats.html")) 
 
     container.innerHTML += "<hr><h2>🏅 Maçın Adamları</h2>";
 
-    // Her maç için maçın adamını seç
     maclar.forEach(mac => {
       const { id: macID, tarih } = mac;
       const ilgiliOylar = oylar.filter(o => o.mac_id === macID);
@@ -297,92 +272,11 @@ async function getData(sheetTabId) {
   }
 }
 
-/*
-// ✅ Veri Gönderme (POST)
-async function postData(tab, rows) {
-  try {
-    const res = await fetch(`${API_BASE_URL}?action=post&tabId=${tab}`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(rows)
-    });
-    return await res.json();
-  } catch (err) {
-    console.error("postData hatası:", err);
-    return null;
-  }
-}
-
-
-fetch("https://script.google.com/macros/s/AKfycbzSDYG-CVkfUlz5E2OrXZAcDP75zY1k6i8F733X0NFSXDaLaDLeCcGQN8kobqeT556waQ/exec?tabId=Oylar", {
-  method: "POST",
-  headers: {
-    "Content-Type": "application/json"
-  },
-  body: JSON.stringify([
-    ["John Doe", "john@example.com", "Mesaj","1"]
-  ])
-})
-.then(response => response.json())
-.then(data => console.log(data))
-.catch(error => console.error(error));
-*/
-
-/*
-async function postData(sheetTabId, row) {
-  try {
-    const res = await fetch(`${NOCODE_URL}?tabId=${sheetTabId}`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(row),
-    });
-    const json = await res.json();
-    if (json.error) {
-      console.error("API hata:", json.error);
-      return null;
-    }
-    return json;
-  } catch (error) {
-    console.error("postData hatası:", error);
-    return null;
-  }
-}
-
-async function postData(sheet, row) {
-  await fetch(`${NOCODE_URL}?tabId=${sheet}`, {
-    method:"POST", headers: {"Content-Type":"application/json"}, body: JSON.stringify(row)
-  });
-}
-
-async function postData(sheetTabId, row) {
-    const myHeaders = new Headers();
-    myHeaders.append("Content-Type", "application/json");
-
-    const requestOptions = {
-        method: "POST",
-        headers: myHeaders,
-        redirect: "follow",
-        body: JSON.stringify(row)  // dikkat: direkt [[...]]
-    };
-
-    try {
-        const response = await fetch(`${NOCODE_URL}?tabId=${sheetTabId}`);
-        const result = await response.text();
-        console.log(result);
-        return result;
-    } catch (error) {
-        console.error('postData hatası:', error);
-        throw error;
-    }
-}
-*/
 async function postData(sheetTabId, row) {
   try {
     const proxyUrl = "https://cors-anywherepuppet.onrender.com/";
     const fullUrl = `${proxyUrl}${NOCODE_URL}?tabId=${sheetTabId}`;
 
-    console.log("_url:", fullUrl);
-    
     const res = await fetch(fullUrl, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
