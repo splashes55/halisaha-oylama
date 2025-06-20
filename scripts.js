@@ -352,7 +352,8 @@ if (location.pathname === "/new-match" || location.pathname.endsWith("new-match.
 
 
 
-//MAÇ DETAYI
+
+// MAÇ DETAYI
 document.addEventListener("DOMContentLoaded", () => {
   if (location.pathname.includes("match-detail.html")) {
     (async () => {
@@ -376,32 +377,34 @@ document.addEventListener("DOMContentLoaded", () => {
       const takimListesi = takimlar.split(",");
       const pozisyonListesi = pozisyonlar.split(",");
 
-      // Ortalama puanlar hesaplama (önceki kod)
+      // Ort Puanları Hesapla
       const ilgiliOylar = oylar.filter(o => o.mac_id === macID);
-      const puanMap = {};
+      const puanMap = {}; // { oyuncuID: [puan1, puan2, ...] }
+
       ilgiliOylar.forEach(({ oylanan_id, puan }) => {
         if (!puanMap[oylanan_id]) puanMap[oylanan_id] = [];
         puanMap[oylanan_id].push(Number(puan));
       });
+
       const ortalamalar = {};
       for (let oid in puanMap) {
         const puanlar = puanMap[oid];
         ortalamalar[oid] = (puanlar.reduce((a, b) => a + b, 0) / puanlar.length).toFixed(1);
       }
 
-      // MOTM belirleme
+      // Maçın adamını bul
       const toplamlar = {};
       ilgiliOylar.forEach(({ oylanan_id, puan }) => {
         toplamlar[oylanan_id] = (toplamlar[oylanan_id] || 0) + Number(puan);
       });
-      const motm = Object.entries(toplamlar).sort((a, b) => b[1] - a[1])[0]?.[0];
+      const motm = Object.entries(toplamlar).sort((a, b) => b[1] - a[1])[0]?.[0]; // en yüksek toplam puanlı
 
+      // Saha bilgisi
       document.getElementById("matchInfo").innerText = `${tarih} tarihinde saat ${saat}’de ${yer} sahasında oynanan maç`;
 
       const field = document.getElementById("field");
-      field.innerHTML = ""; // Temizle
 
-      // Pozisyon koordinatları (var olan)
+      // Konumlama tablosu (x, y yüzde)
       const pozisyonKoordinatlari = {
         GK: [50, 95],
         DC: [50, 75],
@@ -416,7 +419,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const sagPozisyonlar = ["DR", "FR"];
       const solPozisyonlar = ["DL", "FL"];
 
-      // Kadroları tutacak arrayler
+      // Takım oyuncu listeleri (liste alt kısım için)
       const teamAPlayers = [];
       const teamBPlayers = [];
 
@@ -425,9 +428,10 @@ document.addEventListener("DOMContentLoaded", () => {
         if (!oyuncu) return;
 
         const takim = takimListesi[i] || "A";
-        const poz = pozisyonListesi[i] || "MC"; 
+        const poz = pozisyonListesi[i] || "MC";
         let [x, y] = pozisyonKoordinatlari[poz] || [50, 50];
 
+        // X koordinatlarını mevcut mantıkla ayarla
         if (takim === "A") {
           if (solPozisyonlar.includes(poz)) {
             x = x / 2;
@@ -436,6 +440,8 @@ document.addEventListener("DOMContentLoaded", () => {
           } else {
             x = x / 2;
           }
+          // Y koordinatını alt yarıya sınırla (50-95)
+          y = 50 + (y / 100) * 45; // 50-95 arası
         } else {
           if (sagPozisyonlar.includes(poz)) {
             x = 50 - x / 2;
@@ -444,54 +450,47 @@ document.addEventListener("DOMContentLoaded", () => {
           } else {
             x = 100 - x / 2;
           }
+          // Y koordinatını üst yarıya sınırla (5-50)
+          y = 5 + (y / 100) * 45; // 5-50 arası
         }
 
-        // Saha üzerindeki oyuncu kutusu
         const ort = ortalamalar[oid] || "-";
         const isim = oyuncu.isim;
         const isMotm = (oid === motm);
 
+        // Saha üzerindeki oyuncu div'i
         const div = document.createElement("div");
         div.className = "player " + (takim === "A" ? "teamA" : "teamB") + (isMotm ? " motm" : "");
         div.style.left = `${x}%`;
         div.style.top = `${y}%`;
         div.title = `${isim} (${poz}) - Ortalama Puan: ${ort}`;
         div.innerHTML = `${isim}<br><small>${ort}</small>`;
+
         field.appendChild(div);
 
-        // Kadroya ekle
-        const playerInfo = {
-          id: oid,
-          name: isim,
-          position: poz,
-          avgScore: ort,
-          isMotm: isMotm
-        };
-
-        if (takim === "A") {
-          teamAPlayers.push(playerInfo);
-        } else {
-          teamBPlayers.push(playerInfo);
-        }
+        // Kadro listesi için de kaydet
+        const playerInfo = { id: oid, name: isim, position: poz, avgScore: ort, isMotm };
+        if (takim === "A") teamAPlayers.push(playerInfo);
+        else teamBPlayers.push(playerInfo);
       });
 
-      // Kadro listelerini DOM'a ekleme fonksiyonu
-      function renderPlayerList(containerId, players) {
-        const ul = document.getElementById(containerId);
-        ul.innerHTML = "";
-        players.forEach(p => {
-          const li = document.createElement("li");
-          li.textContent = `${p.name} - ${p.position} - Ortalama: ${p.avgScore}`;
-          if (p.isMotm) {
-            li.classList.add("motm");
-          }
-          ul.appendChild(li);
-        });
-      }
+      // Alt kısımdaki kadro listelerini doldur
+      const teamAList = document.getElementById("teamA-player-list");
+      const teamBList = document.getElementById("teamB-player-list");
 
-      renderPlayerList("teamA-player-list", teamAPlayers);
-      renderPlayerList("teamB-player-list", teamBPlayers);
+      teamAPlayers.forEach(p => {
+        const li = document.createElement("li");
+        li.textContent = `${p.name} (${p.position}) - ${p.avgScore}`;
+        if (p.isMotm) li.classList.add("motm");
+        teamAList.appendChild(li);
+      });
 
+      teamBPlayers.forEach(p => {
+        const li = document.createElement("li");
+        li.textContent = `${p.name} (${p.position}) - ${p.avgScore}`;
+        if (p.isMotm) li.classList.add("motm");
+        teamBList.appendChild(li);
+      });
     })();
   }
 });
