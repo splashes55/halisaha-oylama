@@ -440,7 +440,7 @@ oyuncuIDs.forEach((oid, i) => {
   field.appendChild(div);
 
   // (İstersen takım listelerine ekleme kısmı da burada yapılabilir)
-});
+
 
 
         // Kadro listesi için de kaydet
