@@ -308,8 +308,8 @@ if (location.pathname === "/new-match" || location.pathname.endsWith("new-match.
       select.appendChild(option);
     });
   });
-
-
+  
+  
 
   
 
@@ -349,6 +349,91 @@ if (location.pathname === "/new-match" || location.pathname.endsWith("new-match.
 
   window.addMatch = addMatch;
 }
+
+
+
+//MAÇ DETAYI
+if (location.pathname.endsWith("match-detail.html")) {
+  (async () => {
+    const urlParams = new URLSearchParams(location.search);
+    const macID = urlParams.get("mac");
+
+    const [maclar, oyuncular, oylar] = await Promise.all([
+      getData(SHEET_MACLAR),
+      getData(SHEET_OYUNCULAR),
+      getData(SHEET_OYLAR)
+    ]);
+
+    const mac = maclar.find(m => m.id.toString() === macID);
+    if (!mac) {
+      document.getElementById("matchInfo").innerText = "Maç bulunamadı.";
+      return;
+    }
+
+    const { tarih, saat, yer, oyuncular: oyuncuStr, takimlar, pozisyonlar } = mac;
+    const oyuncuIDs = oyuncuStr.split(",");
+    const takimListesi = takimlar.split(",");
+    const pozisyonListesi = pozisyonlar.split(",");
+
+    // Ort Puanları Hesapla
+    const ilgiliOylar = oylar.filter(o => o.mac_id === macID);
+    const puanMap = {}; // { oyuncuID: [puan1, puan2, ...] }
+
+    ilgiliOylar.forEach(({ oylanan_id, puan }) => {
+      if (!puanMap[oylanan_id]) puanMap[oylanan_id] = [];
+      puanMap[oylanan_id].push(Number(puan));
+    });
+
+    const ortalamalar = {};
+    for (let oid in puanMap) {
+      const puanlar = puanMap[oid];
+      ortalamalar[oid] = (puanlar.reduce((a, b) => a + b, 0) / puanlar.length).toFixed(1);
+    }
+
+    // Maçın adamını bul
+    const toplamlar = {};
+    ilgiliOylar.forEach(({ oylanan_id, puan }) => {
+      toplamlar[oylanan_id] = (toplamlar[oylanan_id] || 0) + Number(puan);
+    });
+    const motm = Object.entries(toplamlar).sort((a, b) => b[1] - a[1])[0]?.[0]; // en yüksek toplam puanlı
+
+    // Saha bilgisi
+    document.getElementById("matchInfo").innerText = `${tarih} tarihinde saat ${saat}’de ${yer} sahasında oynanan maç`;
+
+    const field = document.getElementById("field");
+
+    // Konumlama tablosu (örnek yerler: % olarak)
+    const pozisyonKoordinatlari = {
+      GK: [50, 95],
+      DEF: [30, 75],
+      MID: [50, 50],
+      FWD: [50, 20]
+    };
+
+    oyuncuIDs.forEach((oid, i) => {
+      const oyuncu = oyuncular.find(p => p.id.toString() === oid.toString());
+      if (!oyuncu) return;
+
+      const takim = takimListesi[i] || "A";
+      const poz = pozisyonListesi[i] || "MID";
+      const [x, y] = pozisyonKoordinatlari[poz] || [Math.random() * 100, Math.random() * 100];
+
+      const ort = ortalamalar[oid] || "-";
+      const isim = oyuncu.isim;
+      const isMotm = (oid === motm);
+
+      const div = document.createElement("div");
+      div.className = "player" + (isMotm ? " motm" : "");
+      div.style.left = `${takim === "A" ? x : 100 - x}%`;
+      div.style.top = `${takim === "A" ? y : 100 - y}%`;
+      div.innerHTML = `${isim}<br><small>${ort}</small>`;
+
+      field.appendChild(div);
+    });
+  })();
+}
+
+
 
 
 
