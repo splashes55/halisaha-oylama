@@ -24,7 +24,11 @@
   </select><br>
 
   <input id="yer" placeholder="Yer"><br>
-  <input id="playerIds" placeholder="Oyuncu ID’lerini virgülle yaz"><br>
+  <label for="oyuncularSec">Oyuncular:</label>
+<select id="oyuncularSec" multiple size="6" style="width: 200px;">
+  <option disabled>Yükleniyor...</option>
+</select><br>
+
 
   <button onclick="addMatch()">Maç Ekle</button>
   <p id="msg"></p>
