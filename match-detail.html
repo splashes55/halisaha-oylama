@@ -82,20 +82,20 @@
   <h1>Maç Detayı</h1>
   <div id="matchInfo">Maç bilgileri yükleniyor...</div>
 
-  <div id="match-detail-container">
-    <div id="teamA-lineup">
+  <div id="field"></div>
+
+  <div id="lineups-container" style="display: flex; justify-content: center; gap: 60px; margin-top: 20px;">
+    <div id="teamA-lineup" style="width: 200px;">
       <h3>A Takımı</h3>
-      <ul id="teamA-player-list"></ul>
+      <ul id="teamA-player-list" style="list-style:none; padding:0; margin:0; border:1px solid #ccc; border-radius:6px; max-height: 250px; overflow-y:auto; background:#f0f8ff;"></ul>
     </div>
-
-    <div id="field"></div>
-
-    <div id="teamB-lineup">
+    <div id="teamB-lineup" style="width: 200px;">
       <h3>B Takımı</h3>
-      <ul id="teamB-player-list"></ul>
+      <ul id="teamB-player-list" style="list-style:none; padding:0; margin:0; border:1px solid #ccc; border-radius:6px; max-height: 250px; overflow-y:auto; background:#fff0f0;"></ul>
     </div>
   </div>
 
   <script src="scripts.js"></script>
 </body>
+
 </html>
