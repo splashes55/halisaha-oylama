@@ -9,7 +9,6 @@
       position: relative;
       width: 300px;
       height: 500px;
-      margin: auto;
       background: url('field.png') no-repeat center/cover;
       border: 2px solid #444;
     }
@@ -23,19 +22,74 @@
       padding: 2px 4px;
       font-size: 12px;
       transform: translate(-50%, -50%);
+      cursor: default;
+      user-select: none;
     }
     .motm {
       color: gold;
     }
     .motm::after {
       content: " 🏆";
+      margin-left: 4px;
+    }
+
+    /* Takım listeleri yan yana ve düzenli */
+    #match-detail-container {
+      display: flex;
+      justify-content: center;
+      gap: 40px;
+      margin-top: 20px;
+    }
+    #teamA-lineup, #teamB-lineup {
+      width: 200px;
+    }
+    #teamA-lineup h3, #teamB-lineup h3 {
+      text-align: center;
+      margin-bottom: 10px;
+    }
+    #teamA-player-list, #teamB-player-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      max-height: 500px;
+      overflow-y: auto;
+      background: #f9f9f9;
+    }
+    #teamA-player-list li, #teamB-player-list li {
+      padding: 6px 8px;
+      border-bottom: 1px solid #ddd;
+      font-size: 14px;
+    }
+    #teamA-player-list li.motm, #teamB-player-list li.motm {
+      font-weight: bold;
+      color: gold;
+    }
+    #teamA-player-list li.motm::after, #teamB-player-list li.motm::after {
+      content: " 🏆";
+      margin-left: 6px;
     }
   </style>
 </head>
 <body>
   <h1>Maç Detayı</h1>
   <div id="matchInfo">Maç bilgileri yükleniyor...</div>
-  <div id="field"></div>
+
+  <div id="match-detail-container">
+    <div id="teamA-lineup">
+      <h3>A Takımı</h3>
+      <ul id="teamA-player-list"></ul>
+    </div>
+
+    <div id="field"></div>
+
+    <div id="teamB-lineup">
+      <h3>B Takımı</h3>
+      <ul id="teamB-player-list"></ul>
+    </div>
+  </div>
+
   <script src="scripts.js"></script>
 </body>
 </html>
