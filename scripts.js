@@ -415,7 +415,11 @@ document.addEventListener("DOMContentLoaded", () => {
   FC: [50, 20],
 };
 
-    oyuncuIDs.forEach((oid, i) => {
+    // Sağ ve sol pozisyonlar
+const sagPozisyonlar = ["DR", "FR"];
+const solPozisyonlar = ["DL", "FL"];
+
+oyuncuIDs.forEach((oid, i) => {
   const oyuncu = oyuncular.find(p => p.id.toString() === oid.toString());
   if (!oyuncu) return;
 
@@ -423,11 +427,30 @@ document.addEventListener("DOMContentLoaded", () => {
   const poz = pozisyonListesi[i] || "MC"; // default orta saha
   let [x, y] = pozisyonKoordinatlari[poz] || [50, 50];
 
-  // x koordinatını takımın yarısına göre ayarla
+  // x koordinatını takımın yarısına göre ayarla ve pozisyonun sağ/sol durumuna göre aynala
   if (takim === "A") {
-    x = x / 2;          // 0-50 arası
+    // A takımı için:
+    // sol pozisyonlar solda kalır (x/2)
+    // sağ pozisyonlar sağda kalır (50 + x/2)
+    if (solPozisyonlar.includes(poz)) {
+      x = x / 2;         // Sol yarı saha, sol pozisyon
+    } else if (sagPozisyonlar.includes(poz)) {
+      x = 50 + x / 2;    // Sol yarı saha, sağ pozisyon biraz sağa
+    } else {
+      // ortadakiler (GK, DC, MC, FC vs) sol yarıda ortalama
+      x = x / 2;
+    }
   } else {
-    x = 50 + x / 2;     // 50-100 arası
+    // B takımı için:
+    // sağ pozisyonlar solda (ayna)
+    // sol pozisyonlar sağda (ayna)
+    if (sagPozisyonlar.includes(poz)) {
+      x = 50 - x / 2;    // Aynalanmış solda
+    } else if (solPozisyonlar.includes(poz)) {
+      x = 100 - x / 2;   // Aynalanmış sağda
+    } else {
+      x = 100 - x / 2;   // Ortadakiler sağ yarıda ortalama
+    }
   }
 
   const ort = ortalamalar[oid] || "-";
