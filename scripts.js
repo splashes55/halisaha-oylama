@@ -23,12 +23,34 @@ if (location.pathname.endsWith("index.html") || location.pathname === "/" || doc
     }
 
     maclar.reverse().forEach(mac => {
-      if (!mac || typeof mac !== "object") return;
+  if (!mac || typeof mac !== "object") return;
 
-      const { id, tarih, saat, yer } = mac;
-      const btn = `<a href="vote.html?mac=${id}">Oy Ver</a>`;
-      container.innerHTML += `<div><strong>${tarih} ${saat}</strong> - ${yer} ${btn}</div>`;
-    });
+  const { id, tarih, saat, yer } = mac;
+
+  // Tarih ve saat nesneleri
+  const tarihObj = new Date(tarih);
+  const saatObj = new Date(saat);
+
+  // Türkiye saat dilimi (UTC+3) düzeltmesi
+  const localDate = new Date(tarihObj.getTime() + 3 * 60 * 60 * 1000);
+  const localSaat = new Date(saatObj.getTime() + 3 * 60 * 60 * 1000);
+
+  // Tarih formatı: 18.06.2025
+  const tarihStr = `${localDate.getDate().toString().padStart(2, '0')}.${(localDate.getMonth() + 1).toString().padStart(2, '0')}.${localDate.getFullYear()}`;
+
+  // Saat aralığı: 23-24
+  const saatBasla = localSaat.getHours();
+  const saatBitis = (saatBasla + 1) % 24;
+  const saatStr = `${saatBasla}-${saatBitis}`;
+
+  // Açıklama metni
+  const aciklama = `${yer} - ${tarihStr} tarihi ${saatStr} saatleri arasında oynanan maç`;
+
+  const btn = `<a href="vote.html?mac=${id}">Oy Ver</a>`;
+
+  container.innerHTML += `<div><strong>${aciklama}</strong> ${btn}</div>`;
+});
+
   })();
 }
   });
