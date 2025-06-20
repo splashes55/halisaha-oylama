@@ -253,32 +253,35 @@ if (location.pathname === "/stats" || location.pathname.endsWith("stats.html")) 
 
 
 //OYUNCU EKLEME
-async function addPlayer() {
-  const input = document.getElementById("playerName");
-  const msg = document.getElementById("msg");
-  const isim = input.value.trim();
+if (location.pathname === "/new-player" || location.pathname.endsWith("new-player.html")) {
+  // Yeni oyuncu ekleme fonksiyonunu sadece bu sayfada tanımla
+  async function addPlayer() {
+    const input = document.getElementById("playerName");
+    const msg = document.getElementById("msg");
+    const isim = input.value.trim();
 
-  if (!isim) {
-    msg.innerText = "Lütfen bir isim girin.";
-    return;
+    if (!isim) {
+      msg.innerText = "Lütfen bir isim girin.";
+      return;
+    }
+
+    const yeniID = Date.now().toString();
+    const yeniOyuncuSatiri = [[yeniID, isim]];
+
+    msg.innerText = "Ekleniyor...";
+
+    const sonuc = await postData(SHEET_OYUNCULAR, yeniOyuncuSatiri);
+
+    if (sonuc?.success) {
+      msg.innerText = `✅ "${isim}" başarıyla eklendi.`;
+      input.value = "";
+    } else {
+      msg.innerText = "❌ Oyuncu eklenemedi. Lütfen tekrar deneyin.";
+    }
   }
 
-  // Yeni oyuncunun benzersiz ID'si (örneğin timestamp tabanlı)
-  const yeniID = Date.now().toString();
-
-  // Google Sheets'e eklenecek satır formatı, örn: [id, isim]
-  const yeniOyuncuSatiri = [[yeniID, isim]];
-
-  msg.innerText = "Ekleniyor...";
-
-  const sonuc = await postData(SHEET_OYUNCULAR, yeniOyuncuSatiri);
-
-  if (sonuc?.success) {
-    msg.innerText = `✅ "${isim}" başarıyla eklendi.`;
-    input.value = "";
-  } else {
-    msg.innerText = "❌ Oyuncu eklenemedi. Lütfen tekrar deneyin.";
-  }
+  // global scope'a açmak için:
+  window.addPlayer = addPlayer;
 }
 
 
