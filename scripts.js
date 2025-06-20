@@ -52,9 +52,12 @@ const saatBitis = (saatBasla === 23) ? 24 : saatBasla + 1;
 const saatStr = `${saatBasla}-${saatBitis}`;
 
 const aciklama = `${yer} - ${tarihStr} tarihi ${saatStr} saatleri arasında oynanan maç`;
-const btn = `<a href="vote.html?mac=${id}">Oy Ver</a>`;
+const btnler = `
+  <a href="vote.html?mac=${id}">Oy Ver</a> |
+  <a href="match-detail.html?mac=${id}">Detay</a>
+`;
 
-container.innerHTML += `<div><strong>${aciklama}</strong> ${btn}</div>`;
+container.innerHTML += `<div><strong>${aciklama}</strong> ${btnler}</div>`;
     });
 
     })();
