@@ -254,6 +254,21 @@ async function getData(sheetTabId) {
     return null;
   }
 }
+
+fetch("https://script.google.com/macros/s/AKfycbzSDYG-CVkfUlz5E2OrXZAcDP75zY1k6i8F733X0NFSXDaLaDLeCcGQN8kobqeT556waQ/exec?tabId=Oylar", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json"
+  },
+  body: JSON.stringify([
+    ["John Doe", "john@example.com", "Mesaj","1"]
+  ])
+})
+.then(response => response.json())
+.then(data => console.log(data))
+.catch(error => console.error(error));
+
+
 /*
 async function postData(sheetTabId, row) {
   try {
@@ -279,9 +294,9 @@ async function postData(sheet, row) {
     method:"POST", headers: {"Content-Type":"application/json"}, body: JSON.stringify(row)
   });
 }
-*/
+
 async function postData(sheetTabId, row) {
-    /*const myHeaders = new Headers();
+    const myHeaders = new Headers();
     myHeaders.append("Content-Type", "application/json");
 
     const requestOptions = {
@@ -289,7 +304,7 @@ async function postData(sheetTabId, row) {
         headers: myHeaders,
         redirect: "follow",
         body: JSON.stringify(row)  // dikkat: direkt [[...]]
-    };*/
+    };
 
     try {
         const response = await fetch(`${NOCODE_URL}?tabId=${sheetTabId}`);
@@ -301,3 +316,4 @@ async function postData(sheetTabId, row) {
         throw error;
     }
 }
+*/
