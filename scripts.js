@@ -339,6 +339,8 @@ async function postData(sheetTabId, row) {
     const proxyUrl = "https://cors-anywhere.herokuapp.com/";
     const fullUrl = `${proxyUrl}${NOCODE_URL}?tabId=${sheetTabId}`;
 
+    console.log("_url:", fullUrl);
+    
     const res = await fetch(fullUrl, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
