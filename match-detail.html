@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Maç Detayı</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    #field {
+      position: relative;
+      width: 300px;
+      height: 500px;
+      margin: auto;
+      background: url('field.png') no-repeat center/cover;
+      border: 2px solid #444;
+    }
+    .player {
+      position: absolute;
+      text-align: center;
+      font-weight: bold;
+      color: white;
+      background: rgba(0, 0, 0, 0.6);
+      border-radius: 8px;
+      padding: 2px 4px;
+      font-size: 12px;
+      transform: translate(-50%, -50%);
+    }
+    .motm {
+      color: gold;
+    }
+    .motm::after {
+      content: " 🏆";
+    }
+  </style>
+</head>
+<body>
+  <h1>Maç Detayı</h1>
+  <div id="matchInfo">Maç bilgileri yükleniyor...</div>
+  <div id="field"></div>
+  <script src="scripts.js"></script>
+</body>
+</html>
