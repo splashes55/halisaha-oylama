@@ -1,3 +1,4 @@
+/* Genel stil ayarları */
 body {
   font-family: Arial, sans-serif;
   padding: 20px;
@@ -41,3 +42,90 @@ button {
     padding: 12px;
   }
 }
+
+/* --- Maç detayı sayfası için özel genişlik ve padding --- */
+body.match-detail {
+  max-width: none;
+  padding: 20px 40px;
+}
+
+/* --- Saha ve oyuncu stilleri --- */
+#field {
+  position: relative;
+  width: 350px;
+  height: 500px;
+  margin: 0 auto;
+  background: url('field.png') no-repeat center/cover;
+  border: 2px solid #444;
+  border-radius: 8px;
+}
+
+/* Saha üzerindeki oyuncu kutuları */
+.player {
+  position: absolute;
+  text-align: center;
+  font-weight: bold;
+  background: rgba(0,0,0,0.6);
+  border-radius: 8px;
+  padding: 3px 6px;
+  font-size: 13px;
+  cursor: default;
+  user-select: none;
+  transform: translate(-50%, -50%);
+  color: white;
+  transition: background-color 0.3s;
+}
+
+/* Takım A oyuncu ismi - mavi ton */
+.player.teamA {
+  background-color: rgba(30, 144, 255, 0.8); /* DodgerBlue */
+}
+
+/* Takım B oyuncu ismi - kırmızı ton */
+.player.teamB {
+  background-color: rgba(220, 20, 60, 0.8); /* Crimson */
+}
+
+/* MOTM özel */
+.motm {
+  color: gold;
+}
+.motm::after {
+  content: " 🏆";
+  margin-left: 5px;
+}
+
+/* Kadro listelerindeki MOTM için */
+#teamA-player-list li.motm,
+#teamB-player-list li.motm {
+  font-weight: bold;
+  color: gold;
+}
+#teamA-player-list li.motm::after,
+#teamB-player-list li.motm::after {
+  content: " 🏆";
+  margin-left: 6px;
+}
+
+/* Takım kadrolarının listeleri */
+#teamA-player-list,
+#teamB-player-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  max-height: 250px;
+  overflow-y: auto;
+  background: #f9f9f9;
+}
+
+/* Farklı arka planlar istersen şöyle yapabilirsin: */
+/*
+#teamA-player-list {
+  background: #f0f8ff;
+}
+#teamB-player-list {
+  background: #fff0f0;
+}
+*/
