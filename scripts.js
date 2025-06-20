@@ -353,9 +353,10 @@ if (location.pathname === "/new-match" || location.pathname.endsWith("new-match.
 
 
 //MAÇ DETAYI
-if (location.pathname.endsWith("match-detail.html")) {
-  (async () => {
-    const urlParams = new URLSearchParams(location.search);
+document.addEventListener("DOMContentLoaded", () => {
+  if (location.pathname.includes("match-detail.html")) {
+    (async () => {
+      const urlParams = new URLSearchParams(location.search);
     const macID = urlParams.get("mac");
 
     const [maclar, oyuncular, oylar] = await Promise.all([
@@ -430,8 +431,9 @@ if (location.pathname.endsWith("match-detail.html")) {
 
       field.appendChild(div);
     });
-  })();
-}
+    })();
+  }
+});
 
 
 
