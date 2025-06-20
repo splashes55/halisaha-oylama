@@ -1,5 +1,5 @@
 // 🟨 Ortak Tanımlar
-const NOCODE_URL = "https://cors-anywhere.herokuapp.com/https://script.google.com/macros/s/AKfycbx_txJCZMXL1jEW8VfAcE8U4IzcGypQlvTWhYPXlWOVnBIS_wtz0rDotWRRHMqchP5sFA/exec"; // kendi Apps Script URL'in
+const NOCODE_URL = "https://cors-anywhere.herokuapp.com/https://script.google.com/macros/s/AKfycbwqykFtn0fIVawx8sqhLouaBvYk4gGxrQw3yfdIATbYQDhsf27Gsyh25hZyC0irk0O8tA/exec"; // kendi Apps Script URL'in
 const SHEET_MACLAR = "Maclar";
 const SHEET_OYUNCULAR = "Oyuncular";
 const SHEET_OYLAR = "Oylar";
@@ -305,7 +305,7 @@ async function postData(sheetTabId, row) {
     return null;
   }
 }
-*/
+
 async function postData(sheet, row) {
   await fetch(`${NOCODE_URL}?tabId=${sheet}`, {
     method:"POST", headers: {"Content-Type":"application/json"}, body: JSON.stringify(row)
@@ -333,4 +333,26 @@ async function postData(sheetTabId, row) {
         throw error;
     }
 }
+*/
+async function postData(sheetTabId, row) {
+  try {
+    const proxyUrl = "https://cors-anywhere.herokuapp.com/";
+    const fullUrl = `${proxyUrl}${NOCODE_URL}?tabId=${sheetTabId}`;
 
+    const res = await fetch(fullUrl, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(row),
+    });
+
+    const json = await res.json();
+    if (json.error) {
+      console.error("API hata:", json.error);
+      return null;
+    }
+    return json;
+  } catch (error) {
+    console.error("postData hatası:", error);
+    return null;
+  }
+}
