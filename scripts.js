@@ -29,7 +29,7 @@ document.addEventListener("DOMContentLoaded", () => {
     (async () => {
       const maclar = await getData(SHEET_MACLAR);
       console.log("maclar verisi:", maclar);
-
+      console.log("İlk maç verisi:", maclar[0]);
       const container = document.getElementById("matchList");
       container.innerHTML = "";
 
@@ -42,9 +42,8 @@ document.addEventListener("DOMContentLoaded", () => {
   if (!mac || typeof mac !== "object") return;
 
   const { id, tarih, saat, yer } = mac;
-
-  const tarihObj = new Date(tarih);
-       console.log("tarihObj:", tarihObj);
+  
+  const tarihObj = new Date(tarih);       
   const saatObj = new Date(saat);
 
   // Saat bilgisi UTC olarak alınır
