@@ -34,12 +34,18 @@
     }
 
     /* Takım listeleri yan yana ve düzenli */
-    #match-detail-container {
-      display: flex;
-      justify-content: center;
-      gap: 40px;
-      margin-top: 20px;
-    }
+   #match-detail-container {
+  display: flex;
+  justify-content: center;
+  gap: 40px;
+  margin-top: 20px;
+
+  /* Toplam genişliği minimum olarak belirliyoruz */
+  min-width: 800px; /* veya ihtiyaca göre artır */
+  max-width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+}
     #teamA-lineup, #teamB-lineup {
       width: 200px;
     }
