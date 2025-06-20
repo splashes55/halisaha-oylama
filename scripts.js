@@ -100,7 +100,7 @@ if (location.pathname.endsWith("vote.html")) {
     });
 
     const kendinLabel = document.createElement("label");
-    kendinLabel.innerText = "Oy kullanan kişi:";
+    kendinLabel.innerText = "Oy kullanacak kişi: ";
     kendinLabel.appendChild(kendinSelect);
 
     const oyForm = document.createElement("form");
