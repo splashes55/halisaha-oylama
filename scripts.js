@@ -50,7 +50,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Saat objesinden saat ve dakikayı al
   const saatBasla = saatObj.getUTCHours();    // UTC saatini al
+        console.log("saatBasla:", saatBasla);
   const dakika = saatObj.getUTCMinutes();     // UTC dakikasını al
+        console.log("dakika:", dakika);
 
   // maç tarihine saati ve dakikayı set et
   const macTarihiSaatli = new Date(tarihObj);
