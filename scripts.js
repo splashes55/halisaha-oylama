@@ -281,7 +281,7 @@ async function postData(sheet, row) {
 }
 */
 async function postData(sheetTabId, row) {
-    const myHeaders = new Headers();
+    /*const myHeaders = new Headers();
     myHeaders.append("Content-Type", "application/json");
 
     const requestOptions = {
@@ -289,10 +289,10 @@ async function postData(sheetTabId, row) {
         headers: myHeaders,
         redirect: "follow",
         body: JSON.stringify(row)  // dikkat: direkt [[...]]
-    };
+    };*/
 
     try {
-        const response = await fetch(`${NOCODE_URL}?tabId=${sheetTabId}`, requestOptions);
+        const response = await fetch(`${NOCODE_URL}?tabId=${sheetTabId}`);
         const result = await response.text();
         console.log(result);
         return result;
