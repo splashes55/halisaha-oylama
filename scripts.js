@@ -5,7 +5,7 @@ const SHEET_OYUNCULAR = "Oyuncular";
 const SHEET_OYLAR = "Oylar";
 
 // 🟦 Maç Listesi (index.html)
-if (location.pathname.endsWith("index.html") || location.pathname === "/") {
+if (location.pathname.includes("halisaha-oylama") || location.pathname.endsWith("index.html") || location.pathname === "/") {
   console.log("Maçlar verisi çekiliyor")
   (async () => {
     const maclar = await getData(SHEET_MACLAR);
