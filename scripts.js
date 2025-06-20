@@ -43,28 +43,23 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const { id, tarih, saat, yer } = mac;
 
-  // Tarih kısmını Date olarak al
   const tarihObj = new Date(tarih);
 
-  // Saat stringini sadece saat ve dakika olarak alalım (ör: "23:00" veya "23:00:00")
-  // Eğer saat tam Date formatında geldiyse bunu stringe çevirelim
-  let saatStrRaw = saat;
-  if (typeof saat === "string") {
-    saatStrRaw = saat.split('T')[1] || saat; // "23:00:00.000Z" ise "23:00:00.000Z"
-  }
+  // Saat bilgisini Date olarak al
+  const saatObj = new Date(saat);
 
-  // Sadece saat ve dakika kısmını al (ilk 5 karakter "HH:MM")
-  const saatHM = saatStrRaw.substr(0, 5);
+  // Saat objesinden saat ve dakikayı al
+  const saatBasla = saatObj.getUTCHours();    // UTC saatini al
+  const dakika = saatObj.getUTCMinutes();     // UTC dakikasını al
 
-  // tarihObj’yi kullanarak, yeni Date objesi oluşturup saat ve dakikayı ayarla
-  const [saatD, dakikaD] = saatHM.split(":").map(Number);
+  // maç tarihine saati ve dakikayı set et
   const macTarihiSaatli = new Date(tarihObj);
-  macTarihiSaatli.setHours(saatD, dakikaD, 0, 0);
+  macTarihiSaatli.setHours(saatBasla, dakika, 0, 0);
 
-  // Tarih formatı
+  // Tarihi DD.MM.YYYY olarak formatla
   const tarihStr = `${macTarihiSaatli.getDate().toString().padStart(2, '0')}.${(macTarihiSaatli.getMonth() + 1).toString().padStart(2, '0')}.${macTarihiSaatli.getFullYear()}`;
 
-  const saatBasla = macTarihiSaatli.getHours();
+  // Saat aralığı: 23-24 gibi (bitis 24 olarak yazılır)
   const saatBitis = (saatBasla === 23) ? 24 : saatBasla + 1;
   const saatStr = `${saatBasla}-${saatBitis}`;
 
@@ -74,6 +69,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   container.innerHTML += `<div><strong>${aciklama}</strong> ${btn}</div>`;
 });
+
     })();
   }
 });
