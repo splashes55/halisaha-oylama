@@ -47,7 +47,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const tarihStr = `${tarihObj.getUTCDate().toString().padStart(2, '0')}.${(tarihObj.getUTCMonth() + 1).toString().padStart(2, '0')}.${tarihObj.getUTCFullYear()}`;
 
       const saatObj = new Date(saat);
-      let saatBasla = saatObj.getUTCHours() + 3;
+      let saatBasla = saatObj.getUTCHours() + 5;
       if (saatBasla >= 24) saatBasla -= 24;
       const saatBitis = (saatBasla === 23) ? 24 : (saatBasla + 1) % 24;
       const saatStr = `${saatBasla}-${saatBitis}`;
