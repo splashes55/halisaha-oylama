@@ -39,39 +39,23 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
      maclar.reverse().forEach(mac => {
-  if (!mac || typeof mac !== "object") return;
+      if (!mac || typeof mac !== "object") return;
 
-  const { id, tarih, saat, yer } = mac;
-  
-  const tarihObj = new Date(tarih);       
-  const saatObj = new Date(saat);
+      const { id, tarih, saat, yer } = mac;
 
-  // Saat bilgisi UTC olarak alınır
-  const saatBasla = saatObj.getUTCHours();
-  const dakika = saatObj.getUTCMinutes();
+      const tarihObj = new Date(tarih);
+      const tarihStr = `${tarihObj.getUTCDate().toString().padStart(2, '0')}.${(tarihObj.getUTCMonth() + 1).toString().padStart(2, '0')}.${tarihObj.getUTCFullYear()}`;
 
-  // Tarih bilgisini UTC olarak al, local time değil
-  const yil = tarihObj.getUTCFullYear();
-  const ay = tarihObj.getUTCMonth();
-  const gun = tarihObj.getUTCDate();
+      const saatObj = new Date(saat);
+      let saatBasla = saatObj.getUTCHours() + 3;
+      if (saatBasla >= 24) saatBasla -= 24;
+      const saatBitis = (saatBasla === 23) ? 24 : (saatBasla + 1) % 24;
+      const saatStr = `${saatBasla}-${saatBitis}`;
 
-  // Yeni tarih objesi (UTC)
-  const macTarihiSaatli = new Date(Date.UTC(yil, ay, gun, saatBasla, dakika, 0));
-
-  // Tarih stringini UTC olarak hazırla
-  const tarihStr = `${macTarihiSaatli.getUTCDate().toString().padStart(2, '0')}.${(macTarihiSaatli.getUTCMonth() + 1).toString().padStart(2, '0')}.${macTarihiSaatli.getUTCFullYear()}`;
-
-  // Saat aralığı
-  const saatBitis = (saatBasla === 23) ? 24 : saatBasla + 1;
-  const saatStr = `${saatBasla}-${saatBitis}`;
-
-  const aciklama = `${yer} - ${tarihStr} tarihi ${saatStr} saatleri arasında oynanan maç`;
-
-  const btn = `<a href="vote.html?mac=${id}">Oy Ver</a>`;
-
-  container.innerHTML += `<div><strong>${aciklama}</strong> ${btn}</div>`;
-});
-
+      const aciklama = `${yer} - ${tarihStr} tarihi ${saatStr} saatleri arasında oynanan maç`;
+      const btn = `<a href="vote.html?mac=${id}">Oy Ver</a>`;
+      container.innerHTML += `<div><strong>${aciklama}</strong> ${btn}</div>`;
+    });
 
     })();
   }
