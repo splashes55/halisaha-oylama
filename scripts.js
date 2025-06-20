@@ -452,7 +452,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const isMotm = (oid === motm);
 
         const div = document.createElement("div");
-        div.className = "player" + (isMotm ? " motm" : "");
+        div.className = "player " + (takim === "A" ? "teamA" : "teamB") + (isMotm ? " motm" : "");
         div.style.left = `${x}%`;
         div.style.top = `${y}%`;
         div.title = `${isim} (${poz}) - Ortalama Puan: ${ort}`;
