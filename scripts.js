@@ -255,6 +255,22 @@ async function getData(sheetTabId) {
   }
 }
 
+// ✅ Veri Gönderme (POST)
+async function postData(tab, rows) {
+  try {
+    const res = await fetch(`${API_BASE_URL}?action=post&tabId=${tab}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(rows)
+    });
+    return await res.json();
+  } catch (err) {
+    console.error("postData hatası:", err);
+    return null;
+  }
+}
+
+/*
 fetch("https://script.google.com/macros/s/AKfycbzSDYG-CVkfUlz5E2OrXZAcDP75zY1k6i8F733X0NFSXDaLaDLeCcGQN8kobqeT556waQ/exec?tabId=Oylar", {
   method: "POST",
   headers: {
@@ -267,7 +283,7 @@ fetch("https://script.google.com/macros/s/AKfycbzSDYG-CVkfUlz5E2OrXZAcDP75zY1k6i
 .then(response => response.json())
 .then(data => console.log(data))
 .catch(error => console.error(error));
-
+*/
 
 /*
 async function postData(sheetTabId, row) {
