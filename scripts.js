@@ -284,7 +284,43 @@ if (location.pathname === "/new-player" || location.pathname.endsWith("new-playe
   window.addPlayer = addPlayer;
 }
 
+//YENİ MAÇ KAYDI EKLEME
+if (location.pathname === "/new-match" || location.pathname.endsWith("new-match.html")) {
+  async function addMatch() {
+    const msg = document.getElementById("msg");
+    const tarih = document.getElementById("tarih").value;
+    const saat = document.getElementById("saatSec").value;
+    const yer = document.getElementById("yer").value.trim();
+    const oyuncuIDs = document.getElementById("playerIds").value.trim();
 
+    if (!tarih || !saat || !yer || !oyuncuIDs) {
+      msg.innerText = "❌ Lütfen tüm alanları doldurun.";
+      return;
+    }
+
+    const id = Date.now().toString(); // benzersiz ID
+
+    const yeniMacSatiri = [[id, tarih, saat, yer, oyuncuIDs]];
+
+    msg.innerText = "Kaydediliyor...";
+
+    const sonuc = await postData(SHEET_MACLAR, yeniMacSatiri);
+
+    if (sonuc?.success) {
+      msg.innerText = `✅ Maç başarıyla eklendi.`;
+      // Alanları sıfırla
+      document.getElementById("tarih").value = "";
+      document.getElementById("saatSec").value = "";
+      document.getElementById("yer").value = "";
+      document.getElementById("playerIds").value = "";
+    } else {
+      msg.innerText = "❌ Maç eklenemedi. Lütfen tekrar deneyin.";
+    }
+  }
+
+  // Fonksiyonu global scope'a aç
+  window.addMatch = addMatch;
+}
 
 
 
