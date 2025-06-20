@@ -8,8 +8,7 @@ const SHEET_OYLAR = "Oylar";
 
 
 // 🟦 Maç Listesi (index.html)
-if (document.body.id === "anasayfa") {
-  console.log("Maçlar verisi çekiliyor")
+if (document.body.id === "anasayfa") {  
   (async () => {
     const maclar = await getData(SHEET_MACLAR);
     console.log("maclar verisi:", maclar);
