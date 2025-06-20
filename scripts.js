@@ -4,6 +4,9 @@ const SHEET_MACLAR = "Maclar";
 const SHEET_OYUNCULAR = "Oyuncular";
 const SHEET_OYLAR = "Oylar";
 
+
+console.log("locationPathname", location.pathname)
+
 // 🟦 Maç Listesi (index.html)
 if (location.pathname.includes("halisaha-oylama") || location.pathname.endsWith("index.html") || location.pathname === "/") {
   console.log("Maçlar verisi çekiliyor")
