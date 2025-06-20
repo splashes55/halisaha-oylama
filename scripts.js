@@ -8,6 +8,7 @@ const SHEET_OYLAR = "Oylar";
 
 
 // 🟦 Maç Listesi (index.html)
+document.addEventListener("DOMContentLoaded", () => {
 if (location.pathname.endsWith("index.html") || location.pathname === "/" || document.body.id === "anasayfa") {
   (async () => {
     const maclar = await getData(SHEET_MACLAR);
@@ -30,6 +31,7 @@ if (location.pathname.endsWith("index.html") || location.pathname === "/" || doc
     });
   })();
 }
+  });
 
 // 🟪 Oy Verme Sayfası (vote.html)
 if (location.pathname.endsWith("vote.html")) {
