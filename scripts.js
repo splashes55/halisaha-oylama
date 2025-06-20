@@ -38,30 +38,30 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
       }
 
-      maclar.reverse().forEach(mac => {
+     maclar.reverse().forEach(mac => {
   if (!mac || typeof mac !== "object") return;
 
   const { id, tarih, saat, yer } = mac;
 
   const tarihObj = new Date(tarih);
-
-  // Saat bilgisini Date olarak al
   const saatObj = new Date(saat);
 
-  // Saat objesinden saat ve dakikayı al
-  const saatBasla = saatObj.getUTCHours();    // UTC saatini al
-        console.log("saatBasla:", saatBasla);
-  const dakika = saatObj.getUTCMinutes();     // UTC dakikasını al
-        console.log("dakika:", dakika);
+  // Saat bilgisi UTC olarak alınır
+  const saatBasla = saatObj.getUTCHours();
+  const dakika = saatObj.getUTCMinutes();
 
-  // maç tarihine saati ve dakikayı set et
-  const macTarihiSaatli = new Date(tarihObj);
-  macTarihiSaatli.setHours(saatBasla, dakika, 0, 0);
+  // Tarih bilgisini UTC olarak al, local time değil
+  const yil = tarihObj.getUTCFullYear();
+  const ay = tarihObj.getUTCMonth();
+  const gun = tarihObj.getUTCDate();
 
-  // Tarihi DD.MM.YYYY olarak formatla
-  const tarihStr = `${macTarihiSaatli.getDate().toString().padStart(2, '0')}.${(macTarihiSaatli.getMonth() + 1).toString().padStart(2, '0')}.${macTarihiSaatli.getFullYear()}`;
+  // Yeni tarih objesi (UTC)
+  const macTarihiSaatli = new Date(Date.UTC(yil, ay, gun, saatBasla, dakika, 0));
 
-  // Saat aralığı: 23-24 gibi (bitis 24 olarak yazılır)
+  // Tarih stringini UTC olarak hazırla
+  const tarihStr = `${macTarihiSaatli.getUTCDate().toString().padStart(2, '0')}.${(macTarihiSaatli.getUTCMonth() + 1).toString().padStart(2, '0')}.${macTarihiSaatli.getUTCFullYear()}`;
+
+  // Saat aralığı
   const saatBitis = (saatBasla === 23) ? 24 : saatBasla + 1;
   const saatStr = `${saatBasla}-${saatBitis}`;
 
@@ -71,6 +71,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   container.innerHTML += `<div><strong>${aciklama}</strong> ${btn}</div>`;
 });
+
 
     })();
   }
