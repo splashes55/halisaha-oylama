@@ -5,10 +5,25 @@ const SHEET_OYUNCULAR = "Oyuncular";
 const SHEET_OYLAR = "Oylar";
 
 
+// URL parametresinde ?admin=gizlisifre123 varsa admin olarak işaretle
+(() => {
+  const urlParams = new URLSearchParams(window.location.search);
+  if (urlParams.get("admin") === "gizlisifre123") {
+    localStorage.setItem("admin", "true");
+    // Parametreyi temizleyip sayfayı yenile
+    const newUrl = window.location.origin + window.location.pathname;
+    window.history.replaceState({}, document.title, newUrl);
+  }
+})();
 
 
 // 🟦 Maç Listesi (index.html)
 document.addEventListener("DOMContentLoaded", () => {
+  const isAdmin = localStorage.getItem("admin") === "true";
+
+  document.querySelectorAll(".admin-only").forEach(el => {
+    el.style.display = isAdmin ? "inline" : "none";
+  });
 if (location.pathname.endsWith("index.html") || location.pathname === "/" || document.body.id === "anasayfa") {
   (async () => {
     const maclar = await getData(SHEET_MACLAR);
