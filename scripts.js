@@ -8,7 +8,7 @@ const SHEET_OYLAR = "Oylar";
 
 
 // 🟦 Maç Listesi (index.html)
-if (document.body.id === "anasayfa") {  
+if (location.pathname.endsWith("index.html") || location.pathname === "/") {
   (async () => {
     const maclar = await getData(SHEET_MACLAR);
     console.log("maclar verisi:", maclar);
