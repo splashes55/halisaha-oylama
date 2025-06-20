@@ -292,7 +292,7 @@ async function postData(sheetTabId, row) {
     };
 
     try {
-        const response = await fetch(${NOCODE_URL}?tabId=${sheetTabId}, requestOptions);
+        const response = await fetch(`${NOCODE_URL}?tabId=${sheetTabId}`, requestOptions);
         const result = await response.text();
         console.log(result);
         return result;
