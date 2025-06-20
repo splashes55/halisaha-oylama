@@ -44,7 +44,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const { id, tarih, saat, yer } = mac;
 
       const tarihObj = new Date(tarih);
-      const tarihStr = `${tarihObj.getUTCDate().toString().padStart(2, '0')}.${(tarihObj.getUTCMonth() + 1).toString().padStart(2, '0')}.${tarihObj.getUTCFullYear()}`;
+      const tarihStr = `${tarihObj.getUTCDate()+1.toString().padStart(2, '0')}.${(tarihObj.getUTCMonth() + 1).toString().padStart(2, '0')}.${tarihObj.getUTCFullYear()}`;
 
       // Saat doğrudan sayı olarak ele alınır
 let saatBasla = parseInt(saat); // örn: "21"
