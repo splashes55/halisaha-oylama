@@ -254,7 +254,7 @@ async function getData(sheetTabId) {
     return null;
   }
 }
-
+/*
 async function postData(sheetTabId, row) {
   try {
     const res = await fetch(`${NOCODE_URL}?tabId=${sheetTabId}`, {
@@ -272,4 +272,10 @@ async function postData(sheetTabId, row) {
     console.error("postData hatası:", error);
     return null;
   }
+}
+*/
+async function postData(sheet, row) {
+  await fetch(`${NOCODE_URL}?tabId=${sheet}`, {
+    method:"POST", headers: {"Content-Type":"application/json"}, body: JSON.stringify(row)
+  });
 }
