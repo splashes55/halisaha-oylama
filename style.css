@@ -77,14 +77,32 @@ body.match-detail {
 }
 
 /* Takım A oyuncu ismi - mavi ton */
+/*
 .player.teamA {
   background-color: rgba(30, 144, 255, 0.8); /* DodgerBlue */
 }
+*/
 
 /* Takım B oyuncu ismi - kırmızı ton */
+/*
 .player.teamB {
   background-color: rgba(220, 20, 60, 0.8); /* Crimson */
 }
+*/
+
+.player.teamA {
+  background-color: rgba(0, 0, 0, 0.6);
+  color: #1E90FF; /* mavi yazı */
+  font-weight: bold;
+}
+
+.player.teamB {
+  background-color: rgba(0, 0, 0, 0.6);
+  color: #DC143C; /* kırmızı yazı */
+  font-weight: bold;
+}
+
+
 
 /* MOTM özel */
 .motm {
@@ -119,6 +137,8 @@ body.match-detail {
   overflow-y: auto;
   background: #f9f9f9;
 }
+
+
 
 /* Farklı arka planlar istersen şöyle yapabilirsin: */
 /*
