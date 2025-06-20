@@ -55,9 +55,9 @@ document.addEventListener("DOMContentLoaded", () => {
         const tarihStr = `${localDate.getDate().toString().padStart(2, '0')}.${(localDate.getMonth() + 1).toString().padStart(2, '0')}.${localDate.getFullYear()}`;
 
         // Saat aralığı: 23-24
-        const saatBasla = localSaat.getHours();
-        const saatBitis = (saatBasla + 1) % 24;
-        const saatStr = `${saatBasla}-${saatBitis}`;
+       const saatBasla = localSaat.getHours();
+const saatBitis = (saatBasla === 23) ? 24 : saatBasla + 1;
+const saatStr = `${saatBasla}-${saatBitis}`;
 
         // Açıklama metni
         const aciklama = `${yer} - ${tarihStr} tarihi ${saatStr} saatleri arasında oynanan maç`;
