@@ -1,5 +1,5 @@
 // 🟨 Ortak Tanımlar
-const NOCODE_URL = "https://script.google.com/macros/s/AKfycbzSDYG-CVkfUlz5E2OrXZAcDP75zY1k6i8F733X0NFSXDaLaDLeCcGQN8kobqeT556waQ/exec"; // kendi Apps Script URL'in
+const NOCODE_URL = "https://script.google.com/macros/s/AKfycbwa_iD66Xjggt27mRo5So4G-_RvF8gtm_CeXrk-4ZUgrTWO3xjjqyPxH07mFysN1DJbqA/exec"; // kendi Apps Script URL'in
 const SHEET_MACLAR = "Maclar";
 const SHEET_OYUNCULAR = "Oyuncular";
 const SHEET_OYLAR = "Oylar";
