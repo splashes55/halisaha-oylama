@@ -336,7 +336,7 @@ async function postData(sheetTabId, row) {
 */
 async function postData(sheetTabId, row) {
   try {
-    const proxyUrl = "https://cors-anywhere.herokuapp.com/";
+    const proxyUrl = "https://cors-anywherepuppet.onrender.com/";
     const fullUrl = `${proxyUrl}${NOCODE_URL}?tabId=${sheetTabId}`;
 
     console.log("_url:", fullUrl);
