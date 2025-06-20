@@ -412,25 +412,34 @@ document.addEventListener("DOMContentLoaded", () => {
     };
 
     oyuncuIDs.forEach((oid, i) => {
-      const oyuncu = oyuncular.find(p => p.id.toString() === oid.toString());
-      if (!oyuncu) return;
+  const oyuncu = oyuncular.find(p => p.id.toString() === oid.toString());
+  if (!oyuncu) return;
 
-      const takim = takimListesi[i] || "A";
-      const poz = pozisyonListesi[i] || "MID";
-      const [x, y] = pozisyonKoordinatlari[poz] || [Math.random() * 100, Math.random() * 100];
+  const takim = takimListesi[i] || "A";
+  const poz = pozisyonListesi[i] || "MC"; // default orta saha
+  let [x, y] = pozisyonKoordinatlari[poz] || [50, 50];
 
-      const ort = ortalamalar[oid] || "-";
-      const isim = oyuncu.isim;
-      const isMotm = (oid === motm);
+  // x koordinatını takımın yarısına göre ayarla
+  if (takim === "A") {
+    x = x / 2;          // 0-50 arası
+  } else {
+    x = 50 + x / 2;     // 50-100 arası
+  }
 
-      const div = document.createElement("div");
-      div.className = "player" + (isMotm ? " motm" : "");
-      div.style.left = `${takim === "A" ? x : 100 - x}%`;
-      div.style.top = `${takim === "A" ? y : 100 - y}%`;
-      div.innerHTML = `${isim}<br><small>${ort}</small>`;
+  const ort = ortalamalar[oid] || "-";
+  const isim = oyuncu.isim;
+  const isMotm = (oid === motm);
 
-      field.appendChild(div);
-    });
+  const div = document.createElement("div");
+  div.className = "player" + (isMotm ? " motm" : "");
+  div.style.left = `${x}%`;
+  div.style.top = `${y}%`;
+  div.title = `${isim} (${poz}) - Ortalama Puan: ${ort}`;
+  div.innerHTML = `${isim}<br><small>${ort}</small>`;
+
+  field.appendChild(div);
+});
+
     })();
   }
 });
