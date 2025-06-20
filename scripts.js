@@ -90,6 +90,7 @@ if (location.pathname.endsWith("vote.html")) {
     const kendinSelect = document.createElement("select");
     kendinSelect.name = "kendin";
     kendinSelect.innerHTML = `<option value="">-- Kendini Seç --</option>`;
+    document.getElementById("voteContainer").innerHTML = ""; // ⬅ bu satır "Maç bilgileri getiriliyor..." yazısını temizler
 
     oynayanlar.forEach(oid => {
       const o = oyuncular.find(p => p.id.toString() === oid.toString());
